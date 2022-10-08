@@ -28,4 +28,8 @@
     <PackageReference Include="SqlSugarCore" Version="5.0.5.7" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Generator\" />
+  </ItemGroup>
+
 </Project>
