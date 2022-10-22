@@ -7,69 +7,78 @@ using System.Text.RegularExpressions;
 namespace CodeGenerator;
 internal class Program
 {
-    private static readonly string connectionString = "Data Source=10.10.212.206;User ID=qms;Password=qms;";
-    private static readonly DbType dbType = DbType.SqlServer;
+    private static readonly string connectionString = Appsettings.ConfigString("Connection", "ConnectionConfig");
+    private static readonly DbType dbType = (DbType)Enum.Parse(typeof(DbType), Appsettings.ConfigString("Connection", "DbType"));
 
 
     public static void Main(string[] args)
     {
-        string TemplateDirPath = Path.Combine(Environment.CurrentDirectory, "Templates");
-        string[] templates = Directory.GetFiles(TemplateDirPath, "*.cshtml", SearchOption.TopDirectoryOnly);
-        int i = 0;
-        foreach (string template in templates)
+        try
         {
-            Console.WriteLine($"{i}:{Path.GetFileNameWithoutExtension(template)}");
-            i++;
-        }
-        Console.WriteLine("请选择模板输入编号:");
-        var inputTemplateIndex = Console.ReadLine();
-        if (!(int.TryParse(inputTemplateIndex, out int templateIndex) && templateIndex < templates.Length))
-        {
-            Console.WriteLine("未选择中模板...");
-            return;
-        }
-        Console.WriteLine("输入表名称(多表;分割)Y(全部生成):");
-        var inputStr = Console.ReadLine() ?? "";
-        List<Table> tables;
-        if (inputStr.ToUpper() == "Y")
-        {
-            tables = InitTables();
-        }
-        else
-        {
-            tables = InitTables(inputStr.Split(";"));
-        }
-        if (tables == null || tables.Count == 0)
-        {
-            return;
-        }
-        var config = new TemplateServiceConfiguration();
-        config.Debug = true;
-        config.EncodedStringFactory = new RawStringFactory();
-        var service = RazorEngineService.Create(config);
-        // 设置模板
-        string templatePath = templates[templateIndex];
-        if (File.Exists(templatePath))
-        {
-            var currentPath = Path.Combine(Environment.CurrentDirectory, "..", "..", "..");
-            foreach (var table in tables)
+            string TemplateDirPath = Path.Combine(Environment.CurrentDirectory, "Templates");
+            string[] templates = Directory.GetFiles(TemplateDirPath, "*.cshtml", SearchOption.TopDirectoryOnly);
+            int i = 0;
+            foreach (string template in templates)
             {
-
-                var result = service.RunCompile(
-                       File.ReadAllText(templatePath),
-                       Path.GetFileNameWithoutExtension(templatePath),
-                       null,
-                       table);
-                var savePath = Path.Combine(currentPath, "Generator", $"{table.ClassName}.cs");
-                var saveDirectoryPath = Path.GetDirectoryName(savePath);
-                if (!Directory.Exists(saveDirectoryPath))
+                Console.WriteLine($"{i}:{Path.GetFileNameWithoutExtension(template)}");
+                i++;
+            }
+            Console.WriteLine("请选择模板输入编号:");
+            var inputTemplateIndex = Console.ReadLine();
+            if (!(int.TryParse(inputTemplateIndex, out int templateIndex) && templateIndex < templates.Length))
+            {
+                Console.WriteLine("未选择中模板...");
+                Console.ReadKey();
+                return;
+            }
+            Console.WriteLine("请输入生成文件前缀:");
+            var firstStr = Console.ReadLine() ?? "";
+            Console.WriteLine("请输入生成文件后缀:");
+            var lastStr = Console.ReadLine() ?? "";
+            Console.WriteLine("输入表名称(多表;分割)Y(全部生成):");
+            var inputStr = Console.ReadLine() ?? "Y";
+            List<Table> tables;
+            if (inputStr.ToUpper() == "Y")
+            {
+                tables = InitTables();
+            }
+            else
+            {
+                tables = InitTables(inputStr.Split(";"));
+            }
+            var config = new TemplateServiceConfiguration();
+            config.Debug = true;
+            config.EncodedStringFactory = new RawStringFactory();
+            var service = RazorEngineService.Create(config);
+            // 设置模板
+            string templatePath = templates[templateIndex];
+            if (File.Exists(templatePath))
+            {
+                var currentPath = Path.Combine(Environment.CurrentDirectory, "..", "..", "..");
+                foreach (var table in tables)
                 {
-                    Directory.CreateDirectory(saveDirectoryPath ?? "");
+
+                    var result = service.RunCompile(
+                           File.ReadAllText(templatePath),
+                           Path.GetFileNameWithoutExtension(templatePath),
+                           null,
+                           table);
+                    var savePath = Path.Combine(currentPath, "Generator", $"{firstStr}{table.ClassName}{lastStr}.cs");
+                    var saveDirectoryPath = Path.GetDirectoryName(savePath);
+                    if (!Directory.Exists(saveDirectoryPath))
+                    {
+                        Directory.CreateDirectory(saveDirectoryPath ?? "");
+                    }
+                    File.WriteAllText(savePath, result);
                 }
-                File.WriteAllText(savePath, result);
             }
         }
-
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+        Console.WriteLine("按任意键关闭");
+        Console.ReadKey();
     }
 
 
@@ -99,7 +108,7 @@ internal class Program
                         IsIdentity = columnInfo.IsIdentity,
                         IsNullable = columnInfo.IsNullable,
                         IsPrimaryKey = columnInfo.IsPrimarykey,
-                        PropertyName = columnInfo.PropertyName,
+                        PropertyName = ToUpperCamel(CleanUp(columnInfo.DbColumnName)),
                         PropertyType = DbColTypeConvort(columnInfo.DataType)
                     });
                 }
@@ -130,7 +139,7 @@ internal class Program
                         IsIdentity = columnInfo.IsIdentity,
                         IsNullable = columnInfo.IsNullable,
                         IsPrimaryKey = columnInfo.IsPrimarykey,
-                        PropertyName = columnInfo.PropertyName,
+                        PropertyName = ToUpperCamel(CleanUp(columnInfo.DbColumnName)),
                         PropertyType = DbColTypeConvort(columnInfo.DataType)
                     });
                 }
