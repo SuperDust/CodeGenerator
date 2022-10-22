@@ -38,7 +38,7 @@ internal class Program
             Console.WriteLine("输入表名称(多表;分割)Y(全部生成):");
             var inputStr = Console.ReadLine() ?? "Y";
             List<Table> tables;
-            if (inputStr.ToUpper() == "Y")
+            if (string.IsNullOrEmpty(inputStr) || inputStr.ToUpper() == "Y")
             {
                 tables = InitTables();
             }
