@@ -60,7 +60,6 @@ internal class Program
                 var currentPath = Appsettings.ConfigString("GeneratorPath");
                 foreach (var table in tables)
                 {
-
                     var result = service.RunCompile(
                            File.ReadAllText(templatePath),
                            Path.GetFileNameWithoutExtension(templatePath),
