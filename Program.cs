@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 namespace CodeGenerator;
 internal class Program
 {
-    private static readonly string connectionString = Appsettings.ConfigString("ConnectionConfig");
+    private static readonly string connectionString = Appsettings.ConfigString("ConnectionString");
     private static readonly DbType dbType = (DbType)Enum.Parse(typeof(DbType), Appsettings.ConfigString("DbType"));
 
 
