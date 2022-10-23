@@ -7,8 +7,8 @@ using System.Text.RegularExpressions;
 namespace CodeGenerator;
 internal class Program
 {
-    private static readonly string connectionString = Appsettings.ConfigString("Connection", "ConnectionConfig");
-    private static readonly DbType dbType = (DbType)Enum.Parse(typeof(DbType), Appsettings.ConfigString("Connection", "DbType"));
+    private static readonly string connectionString = Appsettings.ConfigString("ConnectionConfig");
+    private static readonly DbType dbType = (DbType)Enum.Parse(typeof(DbType), Appsettings.ConfigString("DbType"));
 
 
     public static void Main(string[] args)
