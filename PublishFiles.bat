@@ -1,7 +1,6 @@
 del  .PublishFiles\*.*   /s /q
 
-dotnet publish -r win-x64 --self-contained=false  .\CodeGenerator.csproj -c Release -p:PublishDir=.\.PublishFiles -p:PublishSingleFile=true 
-
+dotnet publish -r win-x64 --self-contained=false  .\CodeGenerator.csproj -c Release -p:PublishDir=.\.PublishFiles 
 
 del  .PublishFiles\*.pdb   /s /q
 

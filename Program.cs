@@ -54,7 +54,10 @@ internal class Program
             string templatePath = templates[templateIndex];
             if (File.Exists(templatePath))
             {
-                var currentPath = Path.Combine(Environment.CurrentDirectory, "..", "..", "..");
+                //调试
+                //var currentPath = Path.Combine(Environment.CurrentDirectory, "..", "..", "..");
+                //发布
+                var currentPath = Appsettings.ConfigString("GeneratorPath");
                 foreach (var table in tables)
                 {
 
