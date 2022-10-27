@@ -1,8 +1,10 @@
-﻿using RazorEngine.Configuration;
+﻿using System.Diagnostics;
+using RazorEngine.Configuration;
 using RazorEngine.Templating;
 using RazorEngine.Text;
 using SqlSugar;
 using System.Text.RegularExpressions;
+using RazorEngine.Compilation.ImpromptuInterface.Dynamic;
 
 namespace CodeGenerator;
 internal class Program
@@ -52,12 +54,12 @@ internal class Program
             var service = RazorEngineService.Create(config);
             // 设置模板
             string templatePath = templates[templateIndex];
+            //调试
+            //var currentPath = Path.Combine(Environment.CurrentDirectory, "..", "..", "..");
+            //发布
+            var currentPath = Path.Combine(Appsettings.ConfigString("GeneratorPath"),"Generator");
             if (File.Exists(templatePath))
             {
-                //调试
-                //var currentPath = Path.Combine(Environment.CurrentDirectory, "..", "..", "..");
-                //发布
-                var currentPath = Appsettings.ConfigString("GeneratorPath");
                 foreach (var table in tables)
                 {
                     var result = service.RunCompile(
@@ -65,7 +67,7 @@ internal class Program
                            Path.GetFileNameWithoutExtension(templatePath),
                            null,
                            table);
-                    var savePath = Path.Combine(currentPath, "Generator", $"{firstStr}{table.ClassName}{lastStr}.cs");
+                    var savePath = Path.Combine(currentPath, $"{firstStr}{table.ClassName}{lastStr}.cs");
                     var saveDirectoryPath = Path.GetDirectoryName(savePath);
                     if (!Directory.Exists(saveDirectoryPath))
                     {
@@ -74,13 +76,12 @@ internal class Program
                     File.WriteAllText(savePath, result);
                 }
             }
+            Process.Start("explorer.exe", currentPath);
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex.Message);
         }
-        Console.WriteLine("按任意键关闭");
-        Console.ReadKey();
     }
 
 
