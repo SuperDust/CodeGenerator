@@ -3,13 +3,16 @@
 @using  System.IO
 @using  System.Linq
 @using  SqlSugar
-@using  CodeGenerator
+@using  CodeGeneratorForm
 @{
     Table table =Model;
     List<ColumnInfo> columnInfos = table.ColumnInfos;
 }
 namespace 命名空间;
 
+/// <summary>
+///     @(table.TableComment)
+/// </summary>
 [SugarTable("@(table.TableName)")]
 public class @(table.ClassName)
 {
