@@ -1,8 +1,8 @@
-﻿using RazorEngine.Configuration;
+﻿using System.Text.RegularExpressions;
+using RazorEngine.Configuration;
 using RazorEngine.Templating;
 using RazorEngine.Text;
 using SqlSugar;
-using System.Text.RegularExpressions;
 
 namespace CodeGeneratorForm
 {
@@ -14,7 +14,8 @@ namespace CodeGeneratorForm
             string templateName,
             string prefix,
             string suffix,
-            string generatorPath)
+            string generatorPath,
+            string namespaceText)
         {
             try
             {
@@ -42,7 +43,7 @@ namespace CodeGeneratorForm
                     {
                         Directory.CreateDirectory(saveDirectoryPath ?? "");
                     }
-                    File.WriteAllText(savePath, result);
+                    File.WriteAllText(savePath, result.Replace("命名空间", namespaceText));
                 }
             }
             catch (Exception ex)
@@ -76,7 +77,7 @@ namespace CodeGeneratorForm
                             IsNullable = columnInfo.IsNullable,
                             IsPrimaryKey = columnInfo.IsPrimarykey,
                             PropertyName = ToUpperCamel(CleanUp(columnInfo.DbColumnName)),
-                            PropertyType = DbColTypeConvort(columnInfo.DataType)
+                            PropertyType = DataTypeConvort(columnInfo.DataType)
                         });
                     }
                     tables.Add(new Table
@@ -125,232 +126,17 @@ namespace CodeGeneratorForm
             return string.Join("", temp);
         };
 
-        private static string DbColTypeConvort(string sqlType)
+        private static string DataTypeConvort(string sqlType)
         {
-            switch (DbContext.DbType)
+            INIFile ini = new INIFile(Path.Combine(Environment.CurrentDirectory, "config.ini"));
+            string type = ini.IniReadValue("DataTypeConvort", sqlType);
+            if (string.IsNullOrWhiteSpace(type))
             {
-                case DbType.SqlServer: return GetSqlServerPropertyType(sqlType);
-                case DbType.MySql: return GetMySqlPropertyType(sqlType);
-                case DbType.PostgreSQL: return GetPGPropertyType(sqlType);
-                case DbType.Oracle: return GetOraclePropertyType(sqlType);
+                return sqlType;
             }
-            return "未映射";
+            return type;
         }
 
-        private static string GetSqlServerPropertyType(string sqlType)
-        {
-            string sysType = "string";
-            switch (sqlType)
-            {
-                case "bigint":
-                    sysType = "long";
-                    break;
-                case "smallint":
-                    sysType = "short";
-                    break;
-                case "int":
-                    sysType = "int";
-                    break;
-                case "uniqueidentifier":
-                    sysType = "Guid";
-                    break;
-                case "smalldatetime":
-                case "datetime":
-                case "datetime2":
-                case "date":
-                case "time":
-                    sysType = "DateTime";
-                    break;
-                case "datetimeoffset":
-                    sysType = "DateTimeOffset";
-                    break;
-                case "float":
-                    sysType = "double";
-                    break;
-                case "real":
-                    sysType = "float";
-                    break;
-                case "numeric":
-                case "smallmoney":
-                case "decimal":
-                case "money":
-                    sysType = "decimal";
-                    break;
-                case "tinyint":
-                    sysType = "byte";
-                    break;
-                case "bit":
-                    sysType = "bool";
-                    break;
-                case "image":
-                case "binary":
-                case "varbinary":
-                case "timestamp":
-                    sysType = "byte[]";
-                    break;
-                case "geography":
-                    sysType = "Microsoft.SqlServer.Types.SqlGeography";
-                    break;
-                case "geometry":
-                    sysType = "Microsoft.SqlServer.Types.SqlGeometry";
-                    break;
-            }
-            return sysType;
-        }
-
-        private static string GetPGPropertyType(string sqlType)
-        {
-            switch (sqlType)
-            {
-                case "int8":
-                case "serial8":
-                    return "long";
-
-                case "bool":
-                    return "bool";
-
-                case "bytea	":
-                    return "byte[]";
-
-                case "float8":
-                    return "double";
-
-                case "int4":
-                case "serial4":
-                    return "int";
-
-                case "money	":
-                    return "decimal";
-
-                case "numeric":
-                    return "decimal";
-
-                case "float4":
-                    return "float";
-
-                case "int2":
-                    return "short";
-
-                case "time":
-                case "timetz":
-                case "timestamp":
-                case "timestamptz":
-                case "date":
-                    return "DateTime";
-
-                case "uuid":
-                    return "Guid";
-
-                default:
-                    return "string";
-            }
-        }
-
-        private static string GetMySqlPropertyType(string sqlType)
-        {
-            string propType = "string";
-            switch (sqlType)
-            {
-                case "bigint":
-                    propType = "long";
-                    break;
-                case "int":
-                    propType = "int";
-                    break;
-                case "smallint":
-                    propType = "short";
-                    break;
-                case "guid":
-                    propType = "Guid";
-                    break;
-                case "smalldatetime":
-                case "date":
-                case "datetime":
-                case "timestamp":
-                    propType = "DateTime";
-                    break;
-                case "float":
-                    propType = "float";
-                    break;
-                case "double":
-                    propType = "double";
-                    break;
-                case "numeric":
-                case "smallmoney":
-                case "decimal":
-                case "money":
-                    propType = "decimal";
-                    break;
-                case "bit":
-                case "bool":
-                case "boolean":
-                    propType = "bool";
-                    break;
-                case "tinyint":
-
-                    propType = "sbyte";
-                    break;
-                case "image":
-                case "binary":
-                case "blob":
-                case "mediumblob":
-                case "longblob":
-                case "varbinary":
-                    propType = "byte[]";
-                    break;
-            }
-            return propType;
-        }
-
-        private static string GetOraclePropertyType(string sqlType)
-        {
-            string sysType = "string";
-            sqlType = sqlType.ToLower();
-            switch (sqlType)
-            {
-                case "bigint":
-                    sysType = "long";
-                    break;
-                case "smallint":
-                    sysType = "short";
-                    break;
-                case "int":
-                    sysType = "int";
-                    break;
-                case "uniqueidentifier":
-                    sysType = "Guid";
-                    break;
-                case "smalldatetime":
-                case "datetime":
-                case "date":
-                    sysType = "DateTime";
-                    break;
-                case "float":
-                    sysType = "double";
-                    break;
-                case "real":
-                case "numeric":
-                case "smallmoney":
-                case "decimal":
-                case "money":
-                case "number":
-                    sysType = "decimal";
-                    break;
-                case "tinyint":
-                    sysType = "byte";
-                    break;
-                case "bit":
-                    sysType = "bool";
-                    break;
-                case "image":
-                case "binary":
-                case "varbinary":
-                case "timestamp":
-                    sysType = "byte[]";
-                    break;
-            }
-            return sysType;
-        }
     }
     public class Table
     {

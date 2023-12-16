@@ -1,0 +1,28 @@
+﻿@using  System
+@using  System.Collections.Generic
+@using  System.IO
+@using  System.Linq
+@using  SqlSugar
+@using  CodeGeneratorForm
+@{
+    Table table =Model;
+    List<ColumnInfo> columnInfos = table.ColumnInfos;
+}
+namespace 命名空间;
+
+/// <summary>
+///     @(table.TableComment)
+/// </summary>
+public class Vo@(table.ClassName) : BaseVo
+{
+@foreach (var column in columnInfos)
+{
+    string isNullable =  column.PropertyType != "string" ? "?" : "";
+    string defaultValue = column.PropertyName=="IsDeleted" ? "="+column.ColumnDefault+";":"";
+    @:/// <summary>
+    @:/// @(column.ColumnComment)
+    @:/// </summary>
+    @:public @(column.PropertyType+isNullable) @(column.PropertyName) { get; set; }@(defaultValue)
+    @:
+}
+}
