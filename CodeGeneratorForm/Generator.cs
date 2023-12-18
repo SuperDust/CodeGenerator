@@ -1,13 +1,14 @@
 ﻿using System.Text.RegularExpressions;
-using RazorEngine.Configuration;
-using RazorEngine.Templating;
-using RazorEngine.Text;
+using JavaScriptEngineSwitcher.Core;
+using JavaScriptEngineSwitcher.Jint;
 using SqlSugar;
+using SqlSugar.Extensions;
 
 namespace CodeGeneratorForm
 {
     public class Generator
     {
+        private static string namespaceName = String.Empty;
 
         public static void Init(
             List<DbTableInfo> dbTableInfos,
@@ -15,35 +16,133 @@ namespace CodeGeneratorForm
             string prefix,
             string suffix,
             string generatorPath,
-            string namespaceText)
+            string namespaceText,
+            string extendName)
         {
             try
             {
+                namespaceName = namespaceText;
                 string TemplateDirPath = Path.Combine(Environment.CurrentDirectory, "Templates");
-                string[] templates = Directory.GetFiles(TemplateDirPath, "*.cshtml", SearchOption.TopDirectoryOnly);
+                string[] templates = Directory.GetFiles(TemplateDirPath, "*.tcode", SearchOption.TopDirectoryOnly);
 
                 var tables = InitTables(dbTableInfos);
-                var config = new TemplateServiceConfiguration();
-                config.Debug = true;
-                config.EncodedStringFactory = new RawStringFactory();
-                var service = RazorEngineService.Create(config);
                 // 设置模板
                 string templatePath = templates.Where(t => Path.GetFileName(t) == templateName).First();
 
                 foreach (var table in tables)
                 {
-                    var result = service.RunCompile(
-                           File.ReadAllText(templatePath),
-                           Path.GetFileNameWithoutExtension(templatePath),
-                           null,
-                           table);
-                    var savePath = Path.Combine(generatorPath, $"{prefix}{table.ClassName}{suffix}.cs");
+                    var savePath = Path.Combine(generatorPath, $"{prefix}{table.ClassName}{suffix}{extendName}");
                     var saveDirectoryPath = Path.GetDirectoryName(savePath);
-                    if (!Directory.Exists(saveDirectoryPath))
+                    if (!string.IsNullOrEmpty(saveDirectoryPath) && !Directory.Exists(saveDirectoryPath))
                     {
-                        Directory.CreateDirectory(saveDirectoryPath ?? "");
+                        Directory.CreateDirectory(saveDirectoryPath);
                     }
-                    File.WriteAllText(savePath, result.Replace("命名空间", namespaceText));
+
+                    List<string> templateList = new List<string>();
+                    List<string> contents = File.ReadAllLines(templatePath).ToList();
+                    int skipIndex = contents.FindIndex(x => x.Contains("$(BEGIN)"));
+                    int takeIndex = 0;
+                    if (skipIndex != -1)
+                    {
+                        takeIndex = contents.FindLastIndex(x => x.Contains("$(END)"));
+                        takeIndex = takeIndex - skipIndex + 1;
+                        templateList.AddRange(contents.Skip(skipIndex).Take(takeIndex));
+                    }
+                    List<string> fileContent = new List<string>();
+                    Regex r = new Regex(@"\$\([.\s\S]*?\)");
+                    Regex rCalculate = new Regex(@"\$\[[.\s\S]*?\]");
+                    for (int j = 0; j < contents.Count; j++)
+                    {
+
+                        if (j == skipIndex)
+                        {
+                            for (int l = 0; l < table.ColumnInfos.Count; l++)
+                            {
+                                for (int k = 0; k < templateList.Count; k++)
+                                {
+                                    var templateContent = templateList[k];
+                                    var templateMatches = r.Matches(templateContent);
+                                    if (templateMatches.Count > 0)
+                                    {
+
+                                        for (int i = 0; i < templateMatches.Count; i++)
+                                        {
+                                            string value = templateMatches[i].Groups[0].Value;
+                                            // 支持三目运算$($[C_IsNullable] ? 'is null' : 'not null')
+                                            if (value.Contains("$["))
+                                            {
+                                                IJsEngine engine = new JintJsEngine(
+                                                    new JintSettings
+                                                    {
+                                                        StrictMode = true
+                                                    }
+                                                );
+                                                var calculateMatches = rCalculate.Matches(value);
+                                                if (calculateMatches.Count > 0)
+                                                {
+                                                    for (int calculateIndex = 0; calculateIndex < calculateMatches.Count; calculateIndex++)
+                                                    {
+                                                        string calculateValue = calculateMatches[calculateIndex].Groups[0].Value;
+                                                        calculateValue = calculateValue.Replace("$[", "$(").Replace("]", ")");
+                                                        engine.SetVariableValue("x" + calculateIndex, getValue(calculateValue, table, l));
+                                                        value = rCalculate.Replace(value, "x" + calculateIndex);
+                                                    }
+                                                }
+                                                templateContent = r.Replace(templateContent, engine.Evaluate(value.Replace("$", "")).ObjToString());
+                                            }
+                                            else
+                                            {
+                                                templateContent = r.Replace(templateContent, getValue(value, table, l).ObjToString());
+                                            }
+                                        }
+                                    }
+                                    fileContent.Add(templateContent);
+                                }
+                            }
+                        }
+                        if (j <= takeIndex)
+                        {
+                            continue;
+                        }
+
+                        var content = contents[j];
+                        var matches = r.Matches(content);
+                        if (matches.Count > 0)
+                        {
+                            for (int i = 0; i < matches.Count; i++)
+                            {
+                                string value = matches[i].Groups[0].Value;
+                                if (value.Contains("$["))
+                                {
+                                    IJsEngine engine = new JintJsEngine(
+                                        new JintSettings
+                                        {
+                                            StrictMode = true
+                                        }
+                                    );
+                                    var calculateMatches = rCalculate.Matches(value);
+                                    if (calculateMatches.Count > 0)
+                                    {
+                                        for (int calculateIndex = 0; calculateIndex < calculateMatches.Count; calculateIndex++)
+                                        {
+                                            string calculateValue = calculateMatches[calculateIndex].Groups[0].Value;
+                                            calculateValue = calculateValue.Replace("$[", "$(").Replace("]", ")");
+                                            engine.SetVariableValue("x" + calculateIndex, getValue(calculateValue, table));
+                                            value = rCalculate.Replace(value, "x" + calculateIndex);
+                                        }
+                                    }
+                                    content = r.Replace(content, engine.Evaluate(value.Replace("$", "")).ObjToString());
+                                }
+                                else
+                                {
+                                    content = r.Replace(content, getValue(value, table).ObjToString());
+                                }
+                            }
+                        }
+                        fileContent.Add(content);
+                    }
+
+                    File.WriteAllLines(savePath, fileContent);
                 }
             }
             catch (Exception ex)
@@ -52,6 +151,44 @@ namespace CodeGeneratorForm
             }
         }
 
+        private static object getValue(string value, Table table, int index = 0)
+        {
+            try
+            {
+                switch (value)
+                {
+                    case "$(Namespace)":
+                        return namespaceName;
+                    case "$(T_TableName)":
+                        return table.TableName;
+                    case "$(T_ClassName)":
+                        return table.ClassName;
+                    case "$(T_TableComment)":
+                        return table.TableComment;
+                    case "$(C_ColumnName)":
+                        return table.ColumnInfos[index].ColumnName;
+                    case " $(C_ColumnComment)":
+                        return table.ColumnInfos[index].ColumnComment;
+                    case "$(C_ColumnDefault)":
+                        return table.ColumnInfos[index].ColumnDefault;
+                    case "$(C_DataType)":
+                        return table.ColumnInfos[index].DataType;
+                    case "$(C_IsIdentity)":
+                        return table.ColumnInfos[index].IsIdentity;
+                    case "$(C_IsPrimaryKey)":
+                        return table.ColumnInfos[index].IsPrimaryKey;
+                    case "$(C_PropertyName)":
+                        return table.ColumnInfos[index].PropertyName;
+                    case "$(C_PropertyType)":
+                        return table.ColumnInfos[index].PropertyType;
+                }
+            }
+            catch (Exception)
+            {
+                //  MessageBox.Show(ex.Message);
+            }
+            return "";
+        }
 
         private static List<Table> InitTables(List<DbTableInfo> dbTableInfos)
         {

@@ -1,0 +1,18 @@
+﻿/*
+*命名空间 $(Namespace)
+*表名 $(T_TableName)
+*类名 $(T_ClassName)
+*备注 $(T_TableComment)
+*循环列 $(BEGIN)
+*列名 $(C_ColumnName)
+*列备注 $(C_ColumnComment)
+*默认值 $(C_ColumnDefault)
+*数据类型 $(C_DataType)
+*是否自增 $(C_IsIdentity)
+*是否为null $(C_IsNullable)
+*是否主键 $(C_IsPrimaryKey)
+*属性名 $(C_PropertyName)
+*属性类型 $(C_PropertyType)
+*循环列 $(END)
+*支持三目运算$($[C_IsNullable] ? 'is null' : 'not null')
+*/

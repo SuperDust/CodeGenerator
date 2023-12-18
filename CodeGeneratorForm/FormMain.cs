@@ -36,7 +36,7 @@ namespace CodeGeneratorForm
             string TemplateDirPath = Path.Combine(Environment.CurrentDirectory, "Templates");
             this.cbx_template.Items.Clear();
             this.cbx_template.Items.Add("");
-            this.cbx_template.Items.AddRange(Directory.GetFiles(TemplateDirPath, "*.cshtml", SearchOption.TopDirectoryOnly).Select(t => Path.GetFileName(t)).ToArray());
+            this.cbx_template.Items.AddRange(Directory.GetFiles(TemplateDirPath, "*.tcode", SearchOption.TopDirectoryOnly).Select(t => Path.GetFileName(t)).ToArray());
             this.cbx_template.SelectedIndex = 0;
             ContextMenuStrip contextMenu = new ContextMenuStrip();
             List<ToolStripMenuItem> toolStripMenus = new List<ToolStripMenuItem>();
@@ -104,8 +104,30 @@ namespace CodeGeneratorForm
                     && !string.IsNullOrEmpty(this.cbx_template.Text)
                     && !string.IsNullOrEmpty(this.txt_dir_path.Text))
                 {
-                    Generator.Init(list, this.cbx_template.Text, this.txt_filefirst.Text, this.txt_filelast.Text, this.txt_dir_path.Text, this.txt_namespace.Text);
+                    Generator.Init(list, this.cbx_template.Text, this.txt_filefirst.Text, this.txt_filelast.Text, this.txt_dir_path.Text, this.txt_namespace.Text, this.txt_extend_name.Text);
+                    if (MessageBox.Show("已生成，是否打开文件夹！", "生成提示", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    {
+                        Process.Start("explorer.exe", this.txt_dir_path.Text);
+                    }
                 }
+                else
+                {
+                    if (list is { Count: > 0 })
+                    {
+                        MessageBox.Show("请选择你要生成的模板或路径！");
+                    }
+                    else
+                    {
+                        MessageBox.Show("请选择你要生成的数据！");
+                    }
+                    return;
+
+                }
+            }
+            else
+            {
+                MessageBox.Show("请选择你要生成的数据！");
+                return;
             }
         }
 
@@ -117,7 +139,7 @@ namespace CodeGeneratorForm
         private void btn_open_template_Click(object sender, EventArgs e)
         {
             string TemplateDirPath = Path.Combine(Environment.CurrentDirectory, "Templates");
-            readFilePath = Directory.GetFiles(TemplateDirPath, "*.cshtml",
+            readFilePath = Directory.GetFiles(TemplateDirPath, "*.tcode",
                SearchOption.TopDirectoryOnly).Where(t => Path.GetFileName(t) == this.cbx_template.Text).FirstOrDefault();
             if (!string.IsNullOrEmpty(readFilePath) && File.Exists(readFilePath))
             {
@@ -297,25 +319,57 @@ namespace CodeGeneratorForm
                 {
                     foreach (var item in generatorSolutions)
                     {
-                        Generator.Init(list, item.Template, item.FileFirst, item.Filelast, item.DirPath, item.NamespaceName);
+                        Generator.Init(list, item.Template, item.FileFirst, item.Filelast, item.DirPath, item.NamespaceName, item.ExtendName);
 
                     }
                 }
+                else
+                {
+                    if (list is { Count: > 0 })
+                    {
+                        MessageBox.Show("请选择你要生成的方案！");
+                    }
+                    else
+                    {
+                        MessageBox.Show("请选择你要生成的数据！");
+                    }
+                    return;
+                }
+            }
+            else
+            {
+                MessageBox.Show("请选择你要生成的数据！");
+                return;
             }
         }
 
         private void btn_save_solution_Click(object sender, EventArgs e)
         {
-            DbContext.Instance.Insertable(new GeneratorSolution
+            if (string.IsNullOrEmpty(this.txt_solution_name.Text))
             {
-                Name = this.txt_solution_name.Text,
-                Template = this.cbx_template.Text,
-                FileFirst = this.txt_filefirst.Text,
-                Filelast = this.txt_filelast.Text,
-                DirPath = this.txt_dir_path.Text,
-                NamespaceName = this.txt_namespace.Text
-            }).ExecuteCommand();
-            InitSolution();
+                MessageBox.Show("方案名必填！");
+                return;
+            }
+            if (!string.IsNullOrEmpty(this.cbx_template.Text)
+              && !string.IsNullOrEmpty(this.txt_dir_path.Text))
+            {
+                DbContext.Instance.Insertable(new GeneratorSolution
+                {
+                    Name = this.txt_solution_name.Text,
+                    Template = this.cbx_template.Text,
+                    FileFirst = this.txt_filefirst.Text,
+                    Filelast = this.txt_filelast.Text,
+                    DirPath = this.txt_dir_path.Text,
+                    NamespaceName = this.txt_namespace.Text,
+                    ExtendName = this.txt_extend_name.Text
+                }).ExecuteCommand();
+                InitSolution();
+            }
+            else
+            {
+                MessageBox.Show("请选择你要生成的模板或路径！");
+            }
+
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -412,14 +466,14 @@ namespace CodeGeneratorForm
                 return;
             }
 
-            string filePath = Path.Combine(Environment.CurrentDirectory, "Templates", name + ".cshtml");
+            string filePath = Path.Combine(Environment.CurrentDirectory, "Templates", name + ".tcode");
             try
             {
-                File.WriteAllText(filePath, "@using  System\r\n@using  System.Collections.Generic\r\n@using  System.IO\r\n@using  System.Linq\r\n@using  SqlSugar\r\n@using  CodeGeneratorForm\r\n@{\r\n\t/*\r\n    *表名 Table->TableName\r\n    *类名 Table->ClassName\r\n    *备注 Table->TableComment\r\n    */\r\n    Table table =Model;\r\n   \r\n   /*@foreach (var column in columnInfos)\r\n    *{\r\n    *@:public void set@(column.ColumnName)(){}\r\n    *}\r\n    *表名 ColumnInfo->TableName\r\n    *列名 ColumnInfo->ColumnName\r\n    *列备注 ColumnInfo->ColumnComment\r\n    *默认值 ColumnInfo->ColumnDefault\r\n    *数据类型 ColumnInfo->DataType\r\n    *是否自增 ColumnInfo->IsIdentity\r\n    *是否为null ColumnInfo->IsNullable\r\n    *是否主键 ColumnInfo->IsPrimaryKey\r\n    *属性名 ColumnInfo->PropertyName\r\n    *属性类型 ColumnInfo->PropertyType\r\n    */\r\n    List<ColumnInfo> columnInfos = table.ColumnInfos;\r\n}");
+                File.WriteAllText(filePath, "/*\r\n*命名空间 $(Namespace)\r\n*表名 $(T_TableName)\r\n*类名 $(T_ClassName)\r\n*备注 $(T_TableComment)\r\n*循环列 $(BEGIN)\r\n*列名 $(C_ColumnName)\r\n*列备注 $(C_ColumnComment)\r\n*默认值 $(C_ColumnDefault)\r\n*数据类型 $(C_DataType)\r\n*是否自增 $(C_IsIdentity)\r\n*是否为null $(C_IsNullable)\r\n*是否主键 $(C_IsPrimaryKey)\r\n*属性名 $(C_PropertyName)\r\n*属性类型 $(C_PropertyType)\r\n*循环列 $(END)\r\n*支持三目运算$($[C_IsNullable] ? 'is null' : 'not null')\r\n*/");
                 string TemplateDirPath = Path.Combine(Environment.CurrentDirectory, "Templates");
                 this.cbx_template.Items.Clear();
                 this.cbx_template.Items.Add("");
-                this.cbx_template.Items.AddRange(Directory.GetFiles(TemplateDirPath, "*.cshtml", SearchOption.TopDirectoryOnly).Select(t => Path.GetFileName(t)).ToArray());
+                this.cbx_template.Items.AddRange(Directory.GetFiles(TemplateDirPath, "*.tcode", SearchOption.TopDirectoryOnly).Select(t => Path.GetFileName(t)).ToArray());
                 this.cbx_template.SelectedIndex = 0;
             }
             catch (Exception ex)
@@ -445,11 +499,11 @@ namespace CodeGeneratorForm
         private void ContextMenu_Click(object? sender, EventArgs e)
         {
             string TemplateDirPath = Path.Combine(Environment.CurrentDirectory, "Templates");
-            File.Delete(Directory.GetFiles(TemplateDirPath, "*.cshtml",
+            File.Delete(Directory.GetFiles(TemplateDirPath, "*.tcode",
                SearchOption.TopDirectoryOnly).Where(t => Path.GetFileName(t) == this.cbx_template.Text).First());
             this.cbx_template.Items.Clear();
             this.cbx_template.Items.Add("");
-            this.cbx_template.Items.AddRange(Directory.GetFiles(TemplateDirPath, "*.cshtml", SearchOption.TopDirectoryOnly).Select(t => Path.GetFileName(t)).ToArray());
+            this.cbx_template.Items.AddRange(Directory.GetFiles(TemplateDirPath, "*.tcode", SearchOption.TopDirectoryOnly).Select(t => Path.GetFileName(t)).ToArray());
             this.cbx_template.SelectedIndex = 0;
         }
     }

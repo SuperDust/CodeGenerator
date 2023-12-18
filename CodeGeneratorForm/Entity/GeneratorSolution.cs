@@ -25,6 +25,13 @@ namespace CodeGeneratorForm.Entity
         public string NamespaceName { get; set; }
 
         /// <summary>
+        ///     扩展名
+        /// </summary>
+        [SugarColumn(ColumnName = "extend_name")]
+        public string ExtendName { get; set; }
+
+
+        /// <summary>
         ///     文件前缀
         /// </summary>
         [SugarColumn(ColumnName = "file_first")]

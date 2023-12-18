@@ -69,6 +69,7 @@
             splitContainer2 = new SplitContainer();
             tableLayoutPanel2 = new TableLayoutPanel();
             panel3 = new Panel();
+            txt_extend_name = new TextBox();
             button5 = new Button();
             tableLayoutPanel3 = new TableLayoutPanel();
             textEditorControl1 = new ICSharpCode.TextEditor.TextEditorControl();
@@ -256,7 +257,7 @@
             // 
             txt_dir_path.Location = new Point(70, 95);
             txt_dir_path.Name = "txt_dir_path";
-            txt_dir_path.Size = new Size(272, 23);
+            txt_dir_path.Size = new Size(220, 23);
             txt_dir_path.TabIndex = 17;
             // 
             // btn_open_browse_dir
@@ -480,6 +481,7 @@
             // 
             // panel3
             // 
+            panel3.Controls.Add(txt_extend_name);
             panel3.Controls.Add(button5);
             panel3.Controls.Add(txt_namespace);
             panel3.Controls.Add(label2);
@@ -503,6 +505,14 @@
             panel3.Name = "panel3";
             panel3.Size = new Size(376, 214);
             panel3.TabIndex = 0;
+            // 
+            // txt_extend_name
+            // 
+            txt_extend_name.Location = new Point(296, 95);
+            txt_extend_name.Name = "txt_extend_name";
+            txt_extend_name.Size = new Size(46, 23);
+            txt_extend_name.TabIndex = 28;
+            txt_extend_name.Text = ".cs";
             // 
             // button5
             // 
@@ -650,5 +660,6 @@
         private Button button4;
         private Button button3;
         private Button button5;
+        private TextBox txt_extend_name;
     }
 }
