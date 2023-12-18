@@ -17,7 +17,8 @@ namespace CodeGeneratorForm
             string suffix,
             string generatorPath,
             string namespaceText,
-            string extendName)
+            string extendName,
+            bool v)
         {
             try
             {
@@ -28,7 +29,8 @@ namespace CodeGeneratorForm
                 var tables = InitTables(dbTableInfos);
                 // 设置模板
                 string templatePath = templates.Where(t => Path.GetFileName(t) == templateName).First();
-
+                List<string> fileContent = new List<string>();
+                var saveOnePath = Path.Combine(generatorPath, $"{prefix}{Path.GetFileNameWithoutExtension(templateName) + DateTime.Now.ToString("yyyyMMddHHmmss")}{suffix}{extendName}");
                 foreach (var table in tables)
                 {
                     var savePath = Path.Combine(generatorPath, $"{prefix}{table.ClassName}{suffix}{extendName}");
@@ -48,12 +50,10 @@ namespace CodeGeneratorForm
                         takeIndex = takeIndex - skipIndex + 1;
                         templateList.AddRange(contents.Skip(skipIndex).Take(takeIndex));
                     }
-                    List<string> fileContent = new List<string>();
                     Regex r = new Regex(@"\$\([.\s\S]*?\)");
                     Regex rCalculate = new Regex(@"\$\[[.\s\S]*?\]");
                     for (int j = 0; j < contents.Count; j++)
                     {
-
                         if (j == skipIndex)
                         {
                             for (int l = 0; l < table.ColumnInfos.Count; l++)
@@ -100,7 +100,7 @@ namespace CodeGeneratorForm
                                 }
                             }
                         }
-                        if (j <= takeIndex)
+                        if (j >= skipIndex && j <= takeIndex)
                         {
                             continue;
                         }
@@ -141,9 +141,17 @@ namespace CodeGeneratorForm
                         }
                         fileContent.Add(content);
                     }
-
-                    File.WriteAllLines(savePath, fileContent);
+                    if (v)
+                    {
+                        fileContent.Add("----------------------------------分割线----------------------------------");
+                    }
+                    else
+                    {
+                        fileContent = new List<string>();
+                        File.WriteAllLines(savePath, fileContent);
+                    }
                 }
+                File.WriteAllLines(saveOnePath, fileContent);
             }
             catch (Exception ex)
             {

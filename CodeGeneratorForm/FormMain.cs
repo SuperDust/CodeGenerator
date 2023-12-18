@@ -104,7 +104,9 @@ namespace CodeGeneratorForm
                     && !string.IsNullOrEmpty(this.cbx_template.Text)
                     && !string.IsNullOrEmpty(this.txt_dir_path.Text))
                 {
-                    Generator.Init(list, this.cbx_template.Text, this.txt_filefirst.Text, this.txt_filelast.Text, this.txt_dir_path.Text, this.txt_namespace.Text, this.txt_extend_name.Text);
+                    Generator.Init(list, this.cbx_template.Text, this.txt_filefirst.Text, this.txt_filelast.Text, this.txt_dir_path.Text, this.txt_namespace.Text, this.txt_extend_name.Text,
+                        MessageBox.Show("是否生成单位文件！", "生成提示", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes
+                        );
                     if (MessageBox.Show("已生成，是否打开文件夹！", "生成提示", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                     {
                         Process.Start("explorer.exe", this.txt_dir_path.Text);
@@ -319,7 +321,8 @@ namespace CodeGeneratorForm
                 {
                     foreach (var item in generatorSolutions)
                     {
-                        Generator.Init(list, item.Template, item.FileFirst, item.Filelast, item.DirPath, item.NamespaceName, item.ExtendName);
+                        Generator.Init(list, item.Template, item.FileFirst, item.Filelast, item.DirPath, item.NamespaceName, item.ExtendName, MessageBox.Show("是否生成单位文件！", "生成提示", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes
+                        );
 
                     }
                 }
