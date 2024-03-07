@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            var resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
             txt_connstr = new TextBox();
             label1 = new Label();
             btn_conn_db = new Button();
@@ -52,14 +52,10 @@
             btn_open_dir = new Button();
             txt_namespace = new TextBox();
             label5 = new Label();
-            btn_save_solution = new Button();
             dgv_solution = new DataGridView();
             dataGridViewCheckBoxColumn1 = new DataGridViewCheckBoxColumn();
             dataGridViewTextBoxColumn1 = new DataGridViewTextBoxColumn();
             dataGridViewTextBoxColumn2 = new DataGridViewTextBoxColumn();
-            btn_generator_solution = new Button();
-            txt_solution_name = new TextBox();
-            label6 = new Label();
             button1 = new Button();
             button2 = new Button();
             splitContainer1 = new SplitContainer();
@@ -69,8 +65,13 @@
             splitContainer2 = new SplitContainer();
             tableLayoutPanel2 = new TableLayoutPanel();
             panel3 = new Panel();
+            btn_generator_solution = new Button();
             txt_extend_name = new TextBox();
+            btn_save_solution = new Button();
+            label6 = new Label();
             button5 = new Button();
+            txt_solution_name = new TextBox();
+            textBox1 = new TextBox();
             tableLayoutPanel3 = new TableLayoutPanel();
             textEditorControl1 = new ICSharpCode.TextEditor.TextEditorControl();
             panel4 = new Panel();
@@ -185,7 +186,7 @@
             // 
             // btn_generator
             // 
-            btn_generator.Location = new Point(199, 124);
+            btn_generator.Location = new Point(143, 154);
             btn_generator.Name = "btn_generator";
             btn_generator.Size = new Size(89, 25);
             btn_generator.TabIndex = 7;
@@ -272,7 +273,7 @@
             // 
             // btn_open_dir
             // 
-            btn_open_dir.Location = new Point(70, 124);
+            btn_open_dir.Location = new Point(34, 154);
             btn_open_dir.Name = "btn_open_dir";
             btn_open_dir.Size = new Size(88, 25);
             btn_open_dir.TabIndex = 19;
@@ -296,16 +297,6 @@
             label5.TabIndex = 20;
             label5.Text = "命名空间";
             // 
-            // btn_save_solution
-            // 
-            btn_save_solution.Location = new Point(70, 185);
-            btn_save_solution.Name = "btn_save_solution";
-            btn_save_solution.Size = new Size(85, 25);
-            btn_save_solution.TabIndex = 22;
-            btn_save_solution.Text = "保存为方案";
-            btn_save_solution.UseVisualStyleBackColor = true;
-            btn_save_solution.Click += btn_save_solution_Click;
-            // 
             // dgv_solution
             // 
             dgv_solution.AllowUserToAddRows = false;
@@ -313,11 +304,11 @@
             dgv_solution.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dgv_solution.Columns.AddRange(new DataGridViewColumn[] { dataGridViewCheckBoxColumn1, dataGridViewTextBoxColumn1, dataGridViewTextBoxColumn2 });
             dgv_solution.Dock = DockStyle.Fill;
-            dgv_solution.Location = new Point(3, 223);
+            dgv_solution.Location = new Point(3, 198);
             dgv_solution.Name = "dgv_solution";
             dgv_solution.ReadOnly = true;
             dgv_solution.RowTemplate.Height = 25;
-            dgv_solution.Size = new Size(376, 454);
+            dgv_solution.Size = new Size(376, 383);
             dgv_solution.TabIndex = 23;
             dgv_solution.CellClick += dgv_solution_CellClick;
             // 
@@ -340,32 +331,6 @@
             dataGridViewTextBoxColumn2.HeaderText = "模板";
             dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
             dataGridViewTextBoxColumn2.ReadOnly = true;
-            // 
-            // btn_generator_solution
-            // 
-            btn_generator_solution.Location = new Point(199, 185);
-            btn_generator_solution.Name = "btn_generator_solution";
-            btn_generator_solution.Size = new Size(89, 25);
-            btn_generator_solution.TabIndex = 24;
-            btn_generator_solution.Text = "生成方案";
-            btn_generator_solution.UseVisualStyleBackColor = true;
-            btn_generator_solution.Click += btn_generator_solution_Click;
-            // 
-            // txt_solution_name
-            // 
-            txt_solution_name.Location = new Point(70, 156);
-            txt_solution_name.Name = "txt_solution_name";
-            txt_solution_name.Size = new Size(272, 23);
-            txt_solution_name.TabIndex = 26;
-            // 
-            // label6
-            // 
-            label6.AutoSize = true;
-            label6.Location = new Point(7, 159);
-            label6.Name = "label6";
-            label6.Size = new Size(56, 17);
-            label6.TabIndex = 25;
-            label6.Text = "方案名称";
             // 
             // button1
             // 
@@ -470,41 +435,56 @@
             tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             tableLayoutPanel2.Controls.Add(panel3, 0, 0);
             tableLayoutPanel2.Controls.Add(dgv_solution, 0, 1);
+            tableLayoutPanel2.Controls.Add(textBox1, 0, 2);
             tableLayoutPanel2.Dock = DockStyle.Fill;
             tableLayoutPanel2.Location = new Point(0, 0);
             tableLayoutPanel2.Name = "tableLayoutPanel2";
-            tableLayoutPanel2.RowCount = 2;
-            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 220F));
+            tableLayoutPanel2.RowCount = 3;
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 195F));
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 96F));
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
             tableLayoutPanel2.Size = new Size(382, 680);
             tableLayoutPanel2.TabIndex = 0;
             // 
             // panel3
             // 
+            panel3.Controls.Add(btn_generator_solution);
             panel3.Controls.Add(txt_extend_name);
+            panel3.Controls.Add(btn_save_solution);
+            panel3.Controls.Add(label6);
             panel3.Controls.Add(button5);
+            panel3.Controls.Add(txt_solution_name);
             panel3.Controls.Add(txt_namespace);
             panel3.Controls.Add(label2);
             panel3.Controls.Add(btn_open_browse_dir);
-            panel3.Controls.Add(btn_generator_solution);
             panel3.Controls.Add(txt_dir_path);
             panel3.Controls.Add(btn_open_dir);
-            panel3.Controls.Add(txt_solution_name);
             panel3.Controls.Add(txt_filelast);
             panel3.Controls.Add(btn_generator);
             panel3.Controls.Add(label5);
-            panel3.Controls.Add(label6);
             panel3.Controls.Add(label4);
             panel3.Controls.Add(cbx_template);
             panel3.Controls.Add(txt_filefirst);
             panel3.Controls.Add(btn_open_template);
-            panel3.Controls.Add(btn_save_solution);
             panel3.Controls.Add(label3);
             panel3.Dock = DockStyle.Fill;
             panel3.Location = new Point(3, 3);
             panel3.Name = "panel3";
-            panel3.Size = new Size(376, 214);
+            panel3.Size = new Size(376, 189);
             panel3.TabIndex = 0;
+            // 
+            // btn_generator_solution
+            // 
+            btn_generator_solution.Location = new Point(253, 154);
+            btn_generator_solution.Name = "btn_generator_solution";
+            btn_generator_solution.Size = new Size(89, 25);
+            btn_generator_solution.TabIndex = 24;
+            btn_generator_solution.Text = "生成方案";
+            btn_generator_solution.UseVisualStyleBackColor = true;
+            btn_generator_solution.Click += btn_generator_solution_Click;
             // 
             // txt_extend_name
             // 
@@ -513,6 +493,25 @@
             txt_extend_name.Size = new Size(46, 23);
             txt_extend_name.TabIndex = 28;
             txt_extend_name.Text = ".cs";
+            // 
+            // btn_save_solution
+            // 
+            btn_save_solution.Location = new Point(257, 123);
+            btn_save_solution.Name = "btn_save_solution";
+            btn_save_solution.Size = new Size(85, 25);
+            btn_save_solution.TabIndex = 22;
+            btn_save_solution.Text = "保存为方案";
+            btn_save_solution.UseVisualStyleBackColor = true;
+            btn_save_solution.Click += btn_save_solution_Click;
+            // 
+            // label6
+            // 
+            label6.AutoSize = true;
+            label6.Location = new Point(8, 126);
+            label6.Name = "label6";
+            label6.Size = new Size(56, 17);
+            label6.TabIndex = 25;
+            label6.Text = "方案名称";
             // 
             // button5
             // 
@@ -523,6 +522,25 @@
             button5.Text = "添加";
             button5.UseVisualStyleBackColor = true;
             button5.Click += button5_Click;
+            // 
+            // txt_solution_name
+            // 
+            txt_solution_name.Location = new Point(70, 123);
+            txt_solution_name.Name = "txt_solution_name";
+            txt_solution_name.Size = new Size(181, 23);
+            txt_solution_name.TabIndex = 26;
+            // 
+            // textBox1
+            // 
+            textBox1.Dock = DockStyle.Fill;
+            textBox1.Location = new Point(3, 587);
+            textBox1.Multiline = true;
+            textBox1.Name = "textBox1";
+            textBox1.ReadOnly = true;
+            textBox1.ScrollBars = ScrollBars.Both;
+            textBox1.Size = new Size(376, 90);
+            textBox1.TabIndex = 24;
+            textBox1.Text = resources.GetString("textBox1.Text");
             // 
             // tableLayoutPanel3
             // 
@@ -605,6 +623,7 @@
             ((System.ComponentModel.ISupportInitialize)splitContainer2).EndInit();
             splitContainer2.ResumeLayout(false);
             tableLayoutPanel2.ResumeLayout(false);
+            tableLayoutPanel2.PerformLayout();
             panel3.ResumeLayout(false);
             panel3.PerformLayout();
             tableLayoutPanel3.ResumeLayout(false);
@@ -637,11 +656,7 @@
         private Button btn_open_dir;
         private TextBox txt_namespace;
         private Label label5;
-        private Button btn_save_solution;
         private DataGridView dgv_solution;
-        private Button btn_generator_solution;
-        private TextBox txt_solution_name;
-        private Label label6;
         private DataGridViewCheckBoxColumn dataGridViewCheckBoxColumn1;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
@@ -661,5 +676,10 @@
         private Button button3;
         private Button button5;
         private TextBox txt_extend_name;
+        private Button btn_generator_solution;
+        private Button btn_save_solution;
+        private Label label6;
+        private TextBox txt_solution_name;
+        private TextBox textBox1;
     }
 }

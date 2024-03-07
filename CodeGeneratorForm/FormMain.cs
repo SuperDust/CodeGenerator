@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using CodeGeneratorForm.Entity;
 using Microsoft.VisualBasic;
+using Microsoft.WindowsAPICodePack.Shell;
 using OfficeOpenXml;
 using SqlSugar;
 
@@ -38,6 +39,7 @@ namespace CodeGeneratorForm
             this.cbx_template.Items.Add("");
             this.cbx_template.Items.AddRange(Directory.GetFiles(TemplateDirPath, "*.tcode", SearchOption.TopDirectoryOnly).Select(t => Path.GetFileName(t)).ToArray());
             this.cbx_template.SelectedIndex = 0;
+            this.txt_dir_path.Text = KnownFolders.Downloads.Path;
             ContextMenuStrip contextMenu = new ContextMenuStrip();
             List<ToolStripMenuItem> toolStripMenus = new List<ToolStripMenuItem>();
             toolStripMenus.Add(new ToolStripMenuItem("删除"));
@@ -321,7 +323,7 @@ namespace CodeGeneratorForm
                 {
                     foreach (var item in generatorSolutions)
                     {
-                        Generator.Init(list, item.Template, item.FileFirst, item.Filelast, item.DirPath, item.NamespaceName, item.ExtendName, MessageBox.Show("是否生成单位文件！", "生成提示", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes
+                        Generator.Init(list, item.Template, item.FileFirst, item.Filelast, item.DirPath, item.NamespaceName, item.ExtendName, MessageBox.Show("是否生成单文件！", "生成提示", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes
                         );
 
                     }
@@ -472,12 +474,12 @@ namespace CodeGeneratorForm
             string filePath = Path.Combine(Environment.CurrentDirectory, "Templates", name + ".tcode");
             try
             {
-                File.WriteAllText(filePath, "/*\r\n*命名空间 $(Namespace)\r\n*表名 $(T_TableName)\r\n*类名 $(T_ClassName)\r\n*备注 $(T_TableComment)\r\n*循环列 $(BEGIN)\r\n*列名 $(C_ColumnName)\r\n*列备注 $(C_ColumnComment)\r\n*默认值 $(C_ColumnDefault)\r\n*数据类型 $(C_DataType)\r\n*是否自增 $(C_IsIdentity)\r\n*是否为null $(C_IsNullable)\r\n*是否主键 $(C_IsPrimaryKey)\r\n*属性名 $(C_PropertyName)\r\n*属性类型 $(C_PropertyType)\r\n*循环列 $(END)\r\n*支持三目运算$($[C_IsNullable] ? 'is null' : 'not null')\r\n*/");
+                File.WriteAllText(filePath, "");
                 string TemplateDirPath = Path.Combine(Environment.CurrentDirectory, "Templates");
                 this.cbx_template.Items.Clear();
                 this.cbx_template.Items.Add("");
                 this.cbx_template.Items.AddRange(Directory.GetFiles(TemplateDirPath, "*.tcode", SearchOption.TopDirectoryOnly).Select(t => Path.GetFileName(t)).ToArray());
-                this.cbx_template.SelectedIndex = 0;
+                this.cbx_template.SelectedIndex = 0;             
             }
             catch (Exception ex)
             {
