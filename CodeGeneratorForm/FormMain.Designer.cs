@@ -42,7 +42,6 @@
             btn_generator = new Button();
             cbx_template = new ComboBox();
             label2 = new Label();
-            btn_open_template = new Button();
             label3 = new Label();
             txt_filefirst = new TextBox();
             txt_filelast = new TextBox();
@@ -53,9 +52,10 @@
             txt_namespace = new TextBox();
             label5 = new Label();
             dgv_solution = new DataGridView();
-            dataGridViewCheckBoxColumn1 = new DataGridViewCheckBoxColumn();
-            dataGridViewTextBoxColumn1 = new DataGridViewTextBoxColumn();
-            dataGridViewTextBoxColumn2 = new DataGridViewTextBoxColumn();
+            Id = new DataGridViewTextBoxColumn();
+            ColumnType = new DataGridViewTextBoxColumn();
+            AttrType = new DataGridViewTextBoxColumn();
+            PackageName = new DataGridViewTextBoxColumn();
             button1 = new Button();
             button2 = new Button();
             splitContainer1 = new SplitContainer();
@@ -65,18 +65,11 @@
             splitContainer2 = new SplitContainer();
             tableLayoutPanel2 = new TableLayoutPanel();
             panel3 = new Panel();
-            btn_generator_solution = new Button();
-            txt_extend_name = new TextBox();
-            btn_save_solution = new Button();
             label6 = new Label();
-            button5 = new Button();
-            txt_solution_name = new TextBox();
+            checkBox2 = new CheckBox();
+            checkBox1 = new CheckBox();
+            txt_extend_name = new TextBox();
             textBox1 = new TextBox();
-            tableLayoutPanel3 = new TableLayoutPanel();
-            textEditorControl1 = new ICSharpCode.TextEditor.TextEditorControl();
-            panel4 = new Panel();
-            button4 = new Button();
-            button3 = new Button();
             ((System.ComponentModel.ISupportInitialize)dgv_tables).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dgv_solution).BeginInit();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
@@ -88,12 +81,9 @@
             panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer2).BeginInit();
             splitContainer2.Panel1.SuspendLayout();
-            splitContainer2.Panel2.SuspendLayout();
             splitContainer2.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
             panel3.SuspendLayout();
-            tableLayoutPanel3.SuspendLayout();
-            panel4.SuspendLayout();
             SuspendLayout();
             // 
             // txt_connstr
@@ -186,7 +176,7 @@
             // 
             // btn_generator
             // 
-            btn_generator.Location = new Point(143, 154);
+            btn_generator.Location = new Point(181, 163);
             btn_generator.Name = "btn_generator";
             btn_generator.Size = new Size(89, 25);
             btn_generator.TabIndex = 7;
@@ -199,7 +189,7 @@
             cbx_template.FormattingEnabled = true;
             cbx_template.Location = new Point(70, 6);
             cbx_template.Name = "cbx_template";
-            cbx_template.Size = new Size(168, 25);
+            cbx_template.Size = new Size(233, 25);
             cbx_template.TabIndex = 9;
             cbx_template.MouseDown += cbx_template_MouseDown;
             // 
@@ -212,20 +202,10 @@
             label2.TabIndex = 10;
             label2.Text = "选择模板";
             // 
-            // btn_open_template
-            // 
-            btn_open_template.Location = new Point(296, 5);
-            btn_open_template.Name = "btn_open_template";
-            btn_open_template.Size = new Size(46, 25);
-            btn_open_template.TabIndex = 11;
-            btn_open_template.Text = "打开";
-            btn_open_template.UseVisualStyleBackColor = true;
-            btn_open_template.Click += btn_open_template_Click;
-            // 
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(8, 69);
+            label3.Location = new Point(8, 103);
             label3.Name = "label3";
             label3.Size = new Size(56, 17);
             label3.TabIndex = 13;
@@ -233,22 +213,22 @@
             // 
             // txt_filefirst
             // 
-            txt_filefirst.Location = new Point(70, 66);
+            txt_filefirst.Location = new Point(70, 100);
             txt_filefirst.Name = "txt_filefirst";
-            txt_filefirst.Size = new Size(99, 23);
+            txt_filefirst.Size = new Size(47, 23);
             txt_filefirst.TabIndex = 14;
             // 
             // txt_filelast
             // 
-            txt_filelast.Location = new Point(243, 65);
+            txt_filelast.Location = new Point(181, 100);
             txt_filelast.Name = "txt_filelast";
-            txt_filelast.Size = new Size(99, 23);
+            txt_filelast.Size = new Size(47, 23);
             txt_filelast.TabIndex = 16;
             // 
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new Point(182, 68);
+            label4.Location = new Point(120, 103);
             label4.Name = "label4";
             label4.Size = new Size(56, 17);
             label4.TabIndex = 15;
@@ -256,14 +236,14 @@
             // 
             // txt_dir_path
             // 
-            txt_dir_path.Location = new Point(70, 95);
+            txt_dir_path.Location = new Point(70, 134);
             txt_dir_path.Name = "txt_dir_path";
-            txt_dir_path.Size = new Size(220, 23);
+            txt_dir_path.Size = new Size(233, 23);
             txt_dir_path.TabIndex = 17;
             // 
             // btn_open_browse_dir
             // 
-            btn_open_browse_dir.Location = new Point(5, 94);
+            btn_open_browse_dir.Location = new Point(5, 133);
             btn_open_browse_dir.Name = "btn_open_browse_dir";
             btn_open_browse_dir.Size = new Size(59, 25);
             btn_open_browse_dir.TabIndex = 18;
@@ -273,7 +253,7 @@
             // 
             // btn_open_dir
             // 
-            btn_open_dir.Location = new Point(34, 154);
+            btn_open_dir.Location = new Point(72, 163);
             btn_open_dir.Name = "btn_open_dir";
             btn_open_dir.Size = new Size(88, 25);
             btn_open_dir.TabIndex = 19;
@@ -283,15 +263,15 @@
             // 
             // txt_namespace
             // 
-            txt_namespace.Location = new Point(70, 36);
+            txt_namespace.Location = new Point(70, 38);
             txt_namespace.Name = "txt_namespace";
-            txt_namespace.Size = new Size(272, 23);
+            txt_namespace.Size = new Size(233, 23);
             txt_namespace.TabIndex = 21;
             // 
             // label5
             // 
             label5.AutoSize = true;
-            label5.Location = new Point(8, 39);
+            label5.Location = new Point(8, 41);
             label5.Name = "label5";
             label5.Size = new Size(56, 17);
             label5.TabIndex = 20;
@@ -299,38 +279,48 @@
             // 
             // dgv_solution
             // 
-            dgv_solution.AllowUserToAddRows = false;
-            dgv_solution.AllowUserToDeleteRows = false;
             dgv_solution.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgv_solution.Columns.AddRange(new DataGridViewColumn[] { dataGridViewCheckBoxColumn1, dataGridViewTextBoxColumn1, dataGridViewTextBoxColumn2 });
+            dgv_solution.Columns.AddRange(new DataGridViewColumn[] { Id, ColumnType, AttrType, PackageName });
             dgv_solution.Dock = DockStyle.Fill;
-            dgv_solution.Location = new Point(3, 198);
+            dgv_solution.Location = new Point(3, 211);
             dgv_solution.Name = "dgv_solution";
-            dgv_solution.ReadOnly = true;
             dgv_solution.RowTemplate.Height = 25;
-            dgv_solution.Size = new Size(376, 383);
+            dgv_solution.Size = new Size(312, 370);
             dgv_solution.TabIndex = 23;
-            dgv_solution.CellClick += dgv_solution_CellClick;
+            dgv_solution.CellEndEdit += dgv_solution_CellEndEdit;
+            dgv_solution.UserAddedRow += dgv_solution_UserAddedRow;
+            dgv_solution.UserDeletingRow += dgv_solution_UserDeletingRow;
             // 
-            // dataGridViewCheckBoxColumn1
+            // Id
             // 
-            dataGridViewCheckBoxColumn1.HeaderText = "";
-            dataGridViewCheckBoxColumn1.Name = "dataGridViewCheckBoxColumn1";
-            dataGridViewCheckBoxColumn1.ReadOnly = true;
-            dataGridViewCheckBoxColumn1.Width = 20;
+            Id.DataPropertyName = "Id";
+            Id.HeaderText = "";
+            Id.Name = "Id";
+            Id.Resizable = DataGridViewTriState.True;
+            Id.SortMode = DataGridViewColumnSortMode.NotSortable;
+            Id.Visible = false;
+            Id.Width = 20;
             // 
-            // dataGridViewTextBoxColumn1
+            // ColumnType
             // 
-            dataGridViewTextBoxColumn1.HeaderText = "方案名";
-            dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
-            dataGridViewTextBoxColumn1.ReadOnly = true;
+            ColumnType.DataPropertyName = "ColumnType";
+            ColumnType.HeaderText = "字段类型";
+            ColumnType.Name = "ColumnType";
+            ColumnType.Width = 81;
             // 
-            // dataGridViewTextBoxColumn2
+            // AttrType
             // 
-            dataGridViewTextBoxColumn2.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            dataGridViewTextBoxColumn2.HeaderText = "模板";
-            dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
-            dataGridViewTextBoxColumn2.ReadOnly = true;
+            AttrType.DataPropertyName = "AttrType";
+            AttrType.HeaderText = "对应属性";
+            AttrType.Name = "AttrType";
+            AttrType.Width = 81;
+            // 
+            // PackageName
+            // 
+            PackageName.DataPropertyName = "PackageName";
+            PackageName.HeaderText = "命名空间";
+            PackageName.Name = "PackageName";
+            PackageName.Width = 81;
             // 
             // button1
             // 
@@ -366,7 +356,7 @@
             // splitContainer1.Panel2
             // 
             splitContainer1.Panel2.Controls.Add(splitContainer2);
-            splitContainer1.Size = new Size(694, 680);
+            splitContainer1.Size = new Size(630, 680);
             splitContainer1.SplitterDistance = 308;
             splitContainer1.TabIndex = 29;
             // 
@@ -420,13 +410,9 @@
             // splitContainer2.Panel1
             // 
             splitContainer2.Panel1.Controls.Add(tableLayoutPanel2);
-            // 
-            // splitContainer2.Panel2
-            // 
-            splitContainer2.Panel2.Controls.Add(tableLayoutPanel3);
             splitContainer2.Panel2Collapsed = true;
-            splitContainer2.Size = new Size(382, 680);
-            splitContainer2.SplitterDistance = 349;
+            splitContainer2.Size = new Size(318, 680);
+            splitContainer2.SplitterDistance = 293;
             splitContainer2.TabIndex = 27;
             // 
             // tableLayoutPanel2
@@ -440,23 +426,21 @@
             tableLayoutPanel2.Location = new Point(0, 0);
             tableLayoutPanel2.Name = "tableLayoutPanel2";
             tableLayoutPanel2.RowCount = 3;
-            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 195F));
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 208F));
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 96F));
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel2.Size = new Size(382, 680);
+            tableLayoutPanel2.Size = new Size(318, 680);
             tableLayoutPanel2.TabIndex = 0;
             // 
             // panel3
             // 
-            panel3.Controls.Add(btn_generator_solution);
-            panel3.Controls.Add(txt_extend_name);
-            panel3.Controls.Add(btn_save_solution);
             panel3.Controls.Add(label6);
-            panel3.Controls.Add(button5);
-            panel3.Controls.Add(txt_solution_name);
+            panel3.Controls.Add(checkBox2);
+            panel3.Controls.Add(checkBox1);
+            panel3.Controls.Add(txt_extend_name);
             panel3.Controls.Add(txt_namespace);
             panel3.Controls.Add(label2);
             panel3.Controls.Add(btn_open_browse_dir);
@@ -468,67 +452,49 @@
             panel3.Controls.Add(label4);
             panel3.Controls.Add(cbx_template);
             panel3.Controls.Add(txt_filefirst);
-            panel3.Controls.Add(btn_open_template);
             panel3.Controls.Add(label3);
             panel3.Dock = DockStyle.Fill;
             panel3.Location = new Point(3, 3);
             panel3.Name = "panel3";
-            panel3.Size = new Size(376, 189);
+            panel3.Size = new Size(312, 202);
             panel3.TabIndex = 0;
-            // 
-            // btn_generator_solution
-            // 
-            btn_generator_solution.Location = new Point(253, 154);
-            btn_generator_solution.Name = "btn_generator_solution";
-            btn_generator_solution.Size = new Size(89, 25);
-            btn_generator_solution.TabIndex = 24;
-            btn_generator_solution.Text = "生成方案";
-            btn_generator_solution.UseVisualStyleBackColor = true;
-            btn_generator_solution.Click += btn_generator_solution_Click;
-            // 
-            // txt_extend_name
-            // 
-            txt_extend_name.Location = new Point(296, 95);
-            txt_extend_name.Name = "txt_extend_name";
-            txt_extend_name.Size = new Size(46, 23);
-            txt_extend_name.TabIndex = 28;
-            txt_extend_name.Text = ".cs";
-            // 
-            // btn_save_solution
-            // 
-            btn_save_solution.Location = new Point(257, 123);
-            btn_save_solution.Name = "btn_save_solution";
-            btn_save_solution.Size = new Size(85, 25);
-            btn_save_solution.TabIndex = 22;
-            btn_save_solution.Text = "保存为方案";
-            btn_save_solution.UseVisualStyleBackColor = true;
-            btn_save_solution.Click += btn_save_solution_Click;
             // 
             // label6
             // 
             label6.AutoSize = true;
-            label6.Location = new Point(8, 126);
+            label6.Location = new Point(207, 69);
             label6.Name = "label6";
-            label6.Size = new Size(56, 17);
-            label6.TabIndex = 25;
-            label6.Text = "方案名称";
+            label6.Size = new Size(44, 17);
+            label6.TabIndex = 32;
+            label6.Text = "扩展名";
             // 
-            // button5
+            // checkBox2
             // 
-            button5.Location = new Point(248, 5);
-            button5.Name = "button5";
-            button5.Size = new Size(42, 25);
-            button5.TabIndex = 27;
-            button5.Text = "添加";
-            button5.UseVisualStyleBackColor = true;
-            button5.Click += button5_Click;
+            checkBox2.AutoSize = true;
+            checkBox2.Location = new Point(114, 68);
+            checkBox2.Name = "checkBox2";
+            checkBox2.Size = new Size(87, 21);
+            checkBox2.TabIndex = 31;
+            checkBox2.Text = "生成单文件";
+            checkBox2.UseVisualStyleBackColor = true;
             // 
-            // txt_solution_name
+            // checkBox1
             // 
-            txt_solution_name.Location = new Point(70, 123);
-            txt_solution_name.Name = "txt_solution_name";
-            txt_solution_name.Size = new Size(181, 23);
-            txt_solution_name.TabIndex = 26;
+            checkBox1.AutoSize = true;
+            checkBox1.Location = new Point(9, 68);
+            checkBox1.Name = "checkBox1";
+            checkBox1.Size = new Size(99, 21);
+            checkBox1.TabIndex = 30;
+            checkBox1.Text = "忽略表名前缀";
+            checkBox1.UseVisualStyleBackColor = true;
+            // 
+            // txt_extend_name
+            // 
+            txt_extend_name.Location = new Point(257, 65);
+            txt_extend_name.Name = "txt_extend_name";
+            txt_extend_name.Size = new Size(46, 23);
+            txt_extend_name.TabIndex = 28;
+            txt_extend_name.Text = ".cs";
             // 
             // textBox1
             // 
@@ -538,70 +504,15 @@
             textBox1.Name = "textBox1";
             textBox1.ReadOnly = true;
             textBox1.ScrollBars = ScrollBars.Both;
-            textBox1.Size = new Size(376, 90);
+            textBox1.Size = new Size(312, 90);
             textBox1.TabIndex = 24;
             textBox1.Text = resources.GetString("textBox1.Text");
-            // 
-            // tableLayoutPanel3
-            // 
-            tableLayoutPanel3.ColumnCount = 1;
-            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            tableLayoutPanel3.Controls.Add(textEditorControl1, 0, 1);
-            tableLayoutPanel3.Controls.Add(panel4, 0, 0);
-            tableLayoutPanel3.Dock = DockStyle.Fill;
-            tableLayoutPanel3.Location = new Point(0, 0);
-            tableLayoutPanel3.Name = "tableLayoutPanel3";
-            tableLayoutPanel3.RowCount = 2;
-            tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F));
-            tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel3.Size = new Size(96, 100);
-            tableLayoutPanel3.TabIndex = 1;
-            // 
-            // textEditorControl1
-            // 
-            textEditorControl1.Dock = DockStyle.Fill;
-            textEditorControl1.Font = new Font("Consolas", 9.75F, FontStyle.Regular, GraphicsUnit.Point);
-            textEditorControl1.IsReadOnly = false;
-            textEditorControl1.Location = new Point(3, 43);
-            textEditorControl1.Name = "textEditorControl1";
-            textEditorControl1.Size = new Size(90, 54);
-            textEditorControl1.TabIndex = 2;
-            // 
-            // panel4
-            // 
-            panel4.Controls.Add(button4);
-            panel4.Controls.Add(button3);
-            panel4.Dock = DockStyle.Fill;
-            panel4.Location = new Point(3, 3);
-            panel4.Name = "panel4";
-            panel4.Size = new Size(90, 34);
-            panel4.TabIndex = 0;
-            // 
-            // button4
-            // 
-            button4.Location = new Point(3, 5);
-            button4.Name = "button4";
-            button4.Size = new Size(47, 25);
-            button4.TabIndex = 13;
-            button4.Text = "保存";
-            button4.UseVisualStyleBackColor = true;
-            button4.Click += button4_Click;
-            // 
-            // button3
-            // 
-            button3.Location = new Point(56, 5);
-            button3.Name = "button3";
-            button3.Size = new Size(46, 25);
-            button3.TabIndex = 12;
-            button3.Text = "关闭";
-            button3.UseVisualStyleBackColor = true;
-            button3.Click += button3_Click;
             // 
             // FormMain
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(694, 680);
+            ClientSize = new Size(630, 680);
             Controls.Add(splitContainer1);
             Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
@@ -619,15 +530,12 @@
             panel1.PerformLayout();
             panel2.ResumeLayout(false);
             splitContainer2.Panel1.ResumeLayout(false);
-            splitContainer2.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)splitContainer2).EndInit();
             splitContainer2.ResumeLayout(false);
             tableLayoutPanel2.ResumeLayout(false);
             tableLayoutPanel2.PerformLayout();
             panel3.ResumeLayout(false);
             panel3.PerformLayout();
-            tableLayoutPanel3.ResumeLayout(false);
-            panel4.ResumeLayout(false);
             ResumeLayout(false);
         }
 
@@ -646,7 +554,6 @@
         private Button btn_generator;
         private ComboBox cbx_template;
         private Label label2;
-        private Button btn_open_template;
         private Label label3;
         private TextBox txt_filefirst;
         private TextBox txt_filelast;
@@ -657,9 +564,6 @@
         private TextBox txt_namespace;
         private Label label5;
         private DataGridView dgv_solution;
-        private DataGridViewCheckBoxColumn dataGridViewCheckBoxColumn1;
-        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
-        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
         private Button button1;
         private Button button2;
         private SplitContainer splitContainer1;
@@ -669,17 +573,14 @@
         private SplitContainer splitContainer2;
         private TableLayoutPanel tableLayoutPanel2;
         private Panel panel3;
-        private TableLayoutPanel tableLayoutPanel3;
-        private Panel panel4;
-        private ICSharpCode.TextEditor.TextEditorControl textEditorControl1;
-        private Button button4;
-        private Button button3;
-        private Button button5;
         private TextBox txt_extend_name;
-        private Button btn_generator_solution;
-        private Button btn_save_solution;
-        private Label label6;
-        private TextBox txt_solution_name;
         private TextBox textBox1;
+        private DataGridViewTextBoxColumn Id;
+        private DataGridViewTextBoxColumn ColumnType;
+        private DataGridViewTextBoxColumn AttrType;
+        private DataGridViewTextBoxColumn PackageName;
+        private CheckBox checkBox1;
+        private CheckBox checkBox2;
+        private Label label6;
     }
 }

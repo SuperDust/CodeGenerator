@@ -1,10 +1,16 @@
 ﻿using System;
+using System.Data;
+using System.Data.SqlTypes;
+using System.Drawing;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
-using JavaScriptEngineSwitcher.Core;
-using JavaScriptEngineSwitcher.Jint;
-using Jint;
+using CodeGeneratorForm.Entity;
+using Google.Protobuf;
+using MySqlX.XDevAPI.Common;
 using MySqlX.XDevAPI.Relational;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
+using RazorEngineCore;
 using SqlSugar;
 using SqlSugar.Extensions;
 
@@ -22,21 +28,30 @@ namespace CodeGeneratorForm
             string generatorPath,
             string namespaceText,
             string extendName,
-            bool v)
+            bool v,
+            bool ignorePrefix)
         {
             try
             {
                 namespaceName = namespaceText;
                 string TemplateDirPath = Path.Combine(Environment.CurrentDirectory, "Templates");
-                string[] templates = Directory.GetFiles(TemplateDirPath, "*.tcode", SearchOption.TopDirectoryOnly);
+                string[] templates = Directory.GetFiles(TemplateDirPath, "*.cshtml", SearchOption.TopDirectoryOnly);
 
+               
                 var tables = InitTables(dbTableInfos);
                 // 设置模板
                 string templatePath = templates.Where(t => Path.GetFileName(t) == templateName).First();
+                IRazorEngine razorEngine = new RazorEngine();
+                IRazorEngineCompiledTemplate template = razorEngine.Compile(File.ReadAllText(templatePath));
                 StringBuilder fileContent = new StringBuilder();
                 var saveOnePath = Path.Combine(generatorPath, $"{prefix}{Path.GetFileNameWithoutExtension(templateName) + DateTime.Now.ToString("yyyyMMddHHmmss")}{suffix}{extendName}");
                 foreach (var table in tables)
                 {
+                    if (ignorePrefix)
+                    {
+                        table.ClassName= table.ClassName.Substring(table.TableName.IndexOf("_"));
+                    }
+
                     var savePath = Path.Combine(generatorPath, $"{prefix}{table.ClassName}{suffix}{extendName}");
                     var saveDirectoryPath = Path.GetDirectoryName(savePath);
                     if (!string.IsNullOrEmpty(saveDirectoryPath) && !Directory.Exists(saveDirectoryPath))
@@ -44,75 +59,10 @@ namespace CodeGeneratorForm
                         Directory.CreateDirectory(saveDirectoryPath);
                     }
 
-                    List<string> templateList = new List<string>();
-                    List<string> contents = File.ReadAllLines(templatePath).ToList();
-                    int skipIndex = contents.FindIndex(x => x.Contains("${BEGIN}"));
-                    int takeIndex = 0;
-                    if (skipIndex != -1)
+                    fileContent.Append(template.Run(new
                     {
-                        takeIndex = contents.FindLastIndex(x => x.Contains("${END}"));
-                        takeIndex = takeIndex - skipIndex + 1;
-                        templateList.AddRange(contents.Skip(skipIndex).Take(takeIndex));
-                    }
-                    Regex r = new Regex(@"\$\{[.\s\S]*?\}");
-                    for (int j = 0; j < contents.Count; j++)
-                    {
-                        if (j == skipIndex)
-                        {
-                            for (int l = 0; l < table.ColumnInfos.Count; l++)
-                            {
-                                for (int k = 0; k < templateList.Count; k++)
-                                {
-                                    var templateContent = templateList[k];
-                                    var templateMatches = r.Matches(templateContent);
-                                    if (templateMatches.Count > 0)
-                                    {
-
-                                        for (int i = 0; i < templateMatches.Count; i++)
-                                        {
-                                            string value = templateMatches[i].Groups[0].Value; 
-                                           templateContent = r.Replace(templateContent, getValue(value, table, l).ObjToString());                                            
-                                        }
-                                    }
-                                    fileContent.AppendLine(templateContent);
-                                }
-                            }
-                        }
-                        if (skipIndex!=-1 && j >= skipIndex && j <= takeIndex)
-                        {
-                            continue;
-                        }
-
-                        var content = contents[j];
-                        var matches = r.Matches(content);
-                        if (matches.Count > 0)
-                        {
-                            for (int i = 0; i < matches.Count; i++)
-                            {
-                                string value = matches[i].Groups[0].Value; 
-                                content = r.Replace(content, getValue(value, table).ObjToString());
-                            }
-                        }
-                        fileContent.AppendLine(content);
-                    }
-
-
-                    Regex funcCalculate = new Regex(@"\$FUNC\{[.\s\S]*?\}\$");
-                    if (fileContent.ToString().Contains("$FUNC{"))
-                    {
-                        
-                        var calculateMatches = funcCalculate.Matches(fileContent.ToString());
-                        if (calculateMatches.Count > 0)
-                        {
-                            for (int calculateIndex = 0; calculateIndex < calculateMatches.Count; calculateIndex++)
-                            {
-                                string calculateValue = calculateMatches[calculateIndex].Groups[0].Value;
-                                var engine = new Engine().Execute(calculateValue.Replace("$FUNC{", "function getResult(){").Replace("}$", "}"));
-                                var result= engine.Invoke("getResult").ObjToString();
-                                fileContent.Replace(calculateValue, result);
-                            }
-                        }
-                    }
+                        DbTable= table
+                    }));
                     if (v)
                     {
                         fileContent.AppendLine("----------------------------------分割线----------------------------------");
@@ -134,51 +84,11 @@ namespace CodeGeneratorForm
             }
         }
 
-        private static object getValue(string value, Table table, int index = 0)
-        {
-            try
-            {
-                switch (value)
-                {
-                    case "${namespace}":
-                        return namespaceName;
-                    case "${tableName}":
-                        return table.TableName;
-                    case "${tableComment}":
-                        return table.TableComment;
-                    case "${ClassName}":
-                        return table.ClassName;
-                    case "${className}":
-                        return ToPascla(table.TableName, false);
-                    case "${columnName}":
-                        return table.ColumnInfos[index].ColumnName;
-                    case "${columnComment}":
-                        return table.ColumnInfos[index].ColumnComment;
-                    case "${columnDefault}":
-                        return table.ColumnInfos[index].ColumnDefault;
-                    case "${dataType}":
-                        return table.ColumnInfos[index].DataType;
-                    case "${isIdentity}":
-                        return table.ColumnInfos[index].IsIdentity;
-                    case "${isPrimaryKey}":
-                        return table.ColumnInfos[index].IsPrimaryKey;
-                    case "${PropertyName}":
-                        return table.ColumnInfos[index].PropertyName;
-                    case "${propertyName}":
-                        return ToPascla(table.ColumnInfos[index].PropertyName, false);
-                    case "${propertyType}":
-                        return table.ColumnInfos[index].PropertyType;
-                }
-            }
-            catch (Exception)
-            {
-                //  MessageBox.Show(ex.Message);
-            }
-            return "";
-        }
+       
 
         private static List<Table> InitTables(List<DbTableInfo> dbTableInfos)
         {
+            List<FieldType> fieldTypes = DbContext.Instance.Queryable<FieldType>().ToList();
             var tables = new List<Table>();
             if (dbTableInfos is { Count: > 0 })
             {
@@ -186,10 +96,11 @@ namespace CodeGeneratorForm
                 {
                     List<DbColumnInfo> columnInfos =
                         DbContext.db!.DbMaintenance.GetColumnInfosByTableName(dbTableInfo.Name, false);
-
                     var cols = new List<ColumnInfo>();
+                    var packageNames = new List<string>();
                     foreach (var columnInfo in columnInfos)
                     {
+                        FieldType type = fieldTypes.Where(t => t.ColumnType == columnInfo.DataType).FirstOrDefault();
                         cols.Add(new ColumnInfo
                         {
                             TableName = columnInfo.TableName,
@@ -200,16 +111,23 @@ namespace CodeGeneratorForm
                             IsIdentity = columnInfo.IsIdentity,
                             IsNullable = columnInfo.IsNullable,
                             IsPrimaryKey = columnInfo.IsPrimarykey,
-                            PropertyName = ToPascla(columnInfo.DbColumnName,true),
-                            PropertyType = DataTypeConvort(columnInfo.DataType)
-                        });
+                            PropertyName = ToPascla(columnInfo.DbColumnName, true),
+                            PropertyName2 = ToPascla(columnInfo.DbColumnName, false),
+                            PropertyType = type==null ?columnInfo.DataType: type.AttrType,
+                        }) ;
+                        if (type != null && !string.IsNullOrEmpty(type.PackageName))
+                        {
+                            packageNames.Add(type.PackageName);
+                        }  
                     }
                     tables.Add(new Table
                     {
                         TableName = dbTableInfo.Name,
                         TableComment = dbTableInfo.Description,
-                        ClassName = ToPascla(dbTableInfo.Name,true),
-                        ColumnInfos = cols
+                        ClassName = ToPascla(dbTableInfo.Name, true),
+                        ClassName2 = ToPascla(dbTableInfo.Name, false),
+                        ColumnInfos = cols,
+                        PackageNames = packageNames
                     });
                 }
             }
@@ -219,52 +137,50 @@ namespace CodeGeneratorForm
 
         private static string ToPascla(string str,bool isUpper=true)
         {
-            if (isUpper)
-            {
-                str = str.ToUpper();
-            }
-            else 
-            {
-                str = str.ToLower();
-            }
             string[] split = str.Split(new char[] { '/', ' ', '_', '.' });
             string newStr = "";
+            int count = 0;
             foreach (var item in split)
-            {
+            {                
                 char[] chars = item.ToCharArray();
-                chars[0] = char.ToUpper(chars[0]);
+                if (count == 0)
+                {
+                    if (isUpper)
+                    {
+                        chars[0] = char.ToUpper(chars[0]);
+                    }
+                    else
+                    {
+                        chars[0] = char.ToLower(chars[0]);
+                    }
+                }
+                else {
+                    chars[0] = char.ToUpper(chars[0]);
+                }
+               
                 for (int i = 1; i < chars.Length; i++)
                 {
                     chars[i] = char.ToLower(chars[i]);
                 }
                 newStr += new string(chars);
+                count++;
             }
             return newStr;
         }
-                        
-
-        private static string DataTypeConvort(string sqlType)
-        {
-            INIFile ini = new INIFile(Path.Combine(Environment.CurrentDirectory, "config.ini"));
-            string type = ini.IniReadValue("DataTypeConvort", sqlType);
-            if (string.IsNullOrWhiteSpace(type))
-            {
-                return sqlType;
-            }
-            return type;
-        }
-
+                      
     }
     public class Table
     {
         public string TableName { get; set; } = string.Empty;
 
         public string ClassName { get; set; } = string.Empty;
+        public string ClassName2 { get;  set; } = string.Empty;
 
         public string TableComment { get; set; } = string.Empty;
 
-        public List<ColumnInfo> ColumnInfos { get; set; } = new List<ColumnInfo>();
+        public  List<string> PackageNames { get; set; }
 
+        public List<ColumnInfo> ColumnInfos { get; set; } = new List<ColumnInfo>();
     }
 
     public class ColumnInfo
@@ -280,6 +196,8 @@ namespace CodeGeneratorForm
         public string DataType { get; set; } = string.Empty;
 
         public string PropertyName { get; set; } = string.Empty;
+
+        public string PropertyName2 { get; set; } = string.Empty;
 
         public string PropertyType { get; set; } = string.Empty;
 

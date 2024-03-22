@@ -2,9 +2,10 @@
 using System.Diagnostics;
 using CodeGeneratorForm.Entity;
 using Microsoft.VisualBasic;
-using Microsoft.WindowsAPICodePack.Shell;
 using OfficeOpenXml;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Text;
 using SqlSugar;
+using SqlSugar.Extensions;
 
 namespace CodeGeneratorForm
 {
@@ -23,7 +24,7 @@ namespace CodeGeneratorForm
         private void FormMain_Load(object sender, EventArgs e)
         {
             dgv_tables.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            DbContext.Instance.CodeFirst.InitTables(typeof(GeneratorSolution), typeof(DbConfig));
+            DbContext.Instance.CodeFirst.InitTables(typeof(FieldType), typeof(DbConfig));
             DbConfig dbConfig = DbContext.Instance.Queryable<DbConfig>().First();
             if (dbConfig == null)
             {
@@ -37,52 +38,17 @@ namespace CodeGeneratorForm
             string TemplateDirPath = Path.Combine(Environment.CurrentDirectory, "Templates");
             this.cbx_template.Items.Clear();
             this.cbx_template.Items.Add("");
-            this.cbx_template.Items.AddRange(Directory.GetFiles(TemplateDirPath, "*.tcode", SearchOption.TopDirectoryOnly).Select(t => Path.GetFileName(t)).ToArray());
+            this.cbx_template.Items.AddRange(Directory.GetFiles(TemplateDirPath, "*.cshtml", SearchOption.TopDirectoryOnly).Select(t => Path.GetFileName(t)).ToArray());
             this.cbx_template.SelectedIndex = 0;
-            this.txt_dir_path.Text = KnownFolders.Downloads.Path;
-            ContextMenuStrip contextMenu = new ContextMenuStrip();
-            List<ToolStripMenuItem> toolStripMenus = new List<ToolStripMenuItem>();
-            toolStripMenus.Add(new ToolStripMenuItem("删除"));
-            contextMenu.Items.AddRange(toolStripMenus.ToArray());
-            contextMenu.ItemClicked += ContextMenu_ItemClicked; ;
-            dgv_solution.ContextMenuStrip = contextMenu;
+            InitSolution();
         }
 
-        private void ContextMenu_ItemClicked(object? sender, ToolStripItemClickedEventArgs e)
-        {
-            if (e.ClickedItem.Text == "删除")
-            {
-                List<GeneratorSolution> generatorSolutions = new List<GeneratorSolution>();
-                foreach (DataGridViewRow row in dgv_solution.Rows)
-                {
-                    if (row.Cells[0].Value.ToString() == "1")
-                    {
-                        generatorSolutions.Add(row.Tag as GeneratorSolution);
-                    }
-                }
-                if (generatorSolutions is { Count: > 0 })
-                {
-                    DbContext.Instance.Deleteable<GeneratorSolution>().WhereColumns(generatorSolutions, it => new { it.Name }).ExecuteCommand();
-                    InitSolution();
-                }
-            }
-        }
+
 
         private void InitSolution()
         {
-            List<GeneratorSolution> generatorSolutions = DbContext.Instance.Queryable<GeneratorSolution>().ToList();
-            dgv_solution.Rows.Clear();
-            if (generatorSolutions is { Count: > 0 })
-            {
-                generatorSolutions.ForEach(info =>
-                {
-                    int rowIndex = dgv_solution.Rows.Add();
-                    dgv_solution.Rows[rowIndex].Cells[0].Value = 0;
-                    dgv_solution.Rows[rowIndex].Cells[1].Value = info.Name;
-                    dgv_solution.Rows[rowIndex].Cells[2].Value = info.Template;
-                    dgv_solution.Rows[rowIndex].Tag = info;
-                });
-            }
+            DataTable dt = DbContext.Instance.Queryable<FieldType>().ToDataTable();
+            dgv_solution.DataSource = dt;
         }
 
         /// <summary>
@@ -107,12 +73,10 @@ namespace CodeGeneratorForm
                     && !string.IsNullOrEmpty(this.txt_dir_path.Text))
                 {
                     Generator.Init(list, this.cbx_template.Text, this.txt_filefirst.Text, this.txt_filelast.Text, this.txt_dir_path.Text, this.txt_namespace.Text, this.txt_extend_name.Text,
-                        MessageBox.Show("是否生成单位文件！", "生成提示", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes
+                        this.checkBox2.Checked,
+                        this.checkBox1.Checked
                         );
-                    if (MessageBox.Show("已生成，是否打开文件夹！", "生成提示", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                    {
-                        Process.Start("explorer.exe", this.txt_dir_path.Text);
-                    }
+                    
                 }
                 else
                 {
@@ -135,28 +99,7 @@ namespace CodeGeneratorForm
             }
         }
 
-        /// <summary>
-        /// 打开模板
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void btn_open_template_Click(object sender, EventArgs e)
-        {
-            string TemplateDirPath = Path.Combine(Environment.CurrentDirectory, "Templates");
-            readFilePath = Directory.GetFiles(TemplateDirPath, "*.tcode",
-               SearchOption.TopDirectoryOnly).Where(t => Path.GetFileName(t) == this.cbx_template.Text).FirstOrDefault();
-            if (!string.IsNullOrEmpty(readFilePath) && File.Exists(readFilePath))
-            {
-                if (this.splitContainer2.Panel2Collapsed)
-                {
-                    textEditorControl1.SetHighlighting("C#");
-                    textEditorControl1.Text = File.ReadAllText(readFilePath);
-                    this.splitContainer2.Panel2Collapsed = false;
-                    this.Width += 400;
-                }
-
-            }
-        }
+      
 
         /// <summary>
         /// 连接数据库
@@ -185,7 +128,6 @@ namespace CodeGeneratorForm
                     ConnectionConfig = this.txt_connstr.Text,
                     ConnectionType = this.cbx_dbtype.Text
                 }).ExecuteCommand();
-                InitSolution();
             }
             catch (Exception ex)
             {
@@ -281,102 +223,6 @@ namespace CodeGeneratorForm
             }
         }
 
-        /// <summary>
-        /// 方案数据选择
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void dgv_solution_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (e.RowIndex != -1 && e.ColumnIndex != -1)
-            {
-                dgv_solution.Rows[e.RowIndex].Cells[0].Value = dgv_solution.Rows[e.RowIndex].Cells[0].Value.ToString() == "0" ? 1 : 0;
-            }
-        }
-
-        /// <summary>
-        /// 生成方案
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void btn_generator_solution_Click(object sender, EventArgs e)
-        {
-            if (DbContext.db != null)
-            {
-                List<DbTableInfo> list = new List<DbTableInfo>();
-                foreach (DataGridViewRow row in dgv_tables.Rows)
-                {
-                    if (row.Cells[0].Value.ToString() == "1")
-                    {
-                        list.Add(row.Tag as DbTableInfo);
-                    }
-                }
-                List<GeneratorSolution> generatorSolutions = new List<GeneratorSolution>();
-                foreach (DataGridViewRow row in dgv_solution.Rows)
-                {
-                    if (row.Cells[0].Value.ToString() == "1")
-                    {
-                        generatorSolutions.Add(row.Tag as GeneratorSolution);
-                    }
-                }
-                if (list is { Count: > 0 } && generatorSolutions is { Count: > 0 })
-                {
-                    foreach (var item in generatorSolutions)
-                    {
-                        Generator.Init(list, item.Template, item.FileFirst, item.Filelast, item.DirPath, item.NamespaceName, item.ExtendName, MessageBox.Show("是否生成单文件！", "生成提示", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes
-                        );
-
-                    }
-                }
-                else
-                {
-                    if (list is { Count: > 0 })
-                    {
-                        MessageBox.Show("请选择你要生成的方案！");
-                    }
-                    else
-                    {
-                        MessageBox.Show("请选择你要生成的数据！");
-                    }
-                    return;
-                }
-            }
-            else
-            {
-                MessageBox.Show("请选择你要生成的数据！");
-                return;
-            }
-        }
-
-        private void btn_save_solution_Click(object sender, EventArgs e)
-        {
-            if (string.IsNullOrEmpty(this.txt_solution_name.Text))
-            {
-                MessageBox.Show("方案名必填！");
-                return;
-            }
-            if (!string.IsNullOrEmpty(this.cbx_template.Text)
-              && !string.IsNullOrEmpty(this.txt_dir_path.Text))
-            {
-                DbContext.Instance.Insertable(new GeneratorSolution
-                {
-                    Name = this.txt_solution_name.Text,
-                    Template = this.cbx_template.Text,
-                    FileFirst = this.txt_filefirst.Text,
-                    Filelast = this.txt_filelast.Text,
-                    DirPath = this.txt_dir_path.Text,
-                    NamespaceName = this.txt_namespace.Text,
-                    ExtendName = this.txt_extend_name.Text
-                }).ExecuteCommand();
-                InitSolution();
-            }
-            else
-            {
-                MessageBox.Show("请选择你要生成的模板或路径！");
-            }
-
-        }
-
         private void button1_Click(object sender, EventArgs e)
         {
             if (DbContext.db != null)
@@ -450,46 +296,6 @@ namespace CodeGeneratorForm
             Process.Start("notepad.exe", Path.Combine(Environment.CurrentDirectory, "config.ini"));
         }
 
-        private void button3_Click(object sender, EventArgs e)
-        {
-            this.splitContainer2.Panel2Collapsed = true;
-            this.Width = 710;
-        }
-
-        private void button4_Click(object sender, EventArgs e)
-        {
-            File.WriteAllText(readFilePath, textEditorControl1.Text);
-            this.splitContainer2.Panel2Collapsed = true;
-            this.Width = 710;
-        }
-
-        private void button5_Click(object sender, EventArgs e)
-        {
-            string name = Interaction.InputBox("请输入模板文件名称", "添加模板", "", -1, -1);
-            if (name.Length == 0)
-            {
-                return;
-            }
-
-            string filePath = Path.Combine(Environment.CurrentDirectory, "Templates", name + ".tcode");
-            try
-            {
-                File.WriteAllText(filePath, "");
-                string TemplateDirPath = Path.Combine(Environment.CurrentDirectory, "Templates");
-                this.cbx_template.Items.Clear();
-                this.cbx_template.Items.Add("");
-                this.cbx_template.Items.AddRange(Directory.GetFiles(TemplateDirPath, "*.tcode", SearchOption.TopDirectoryOnly).Select(t => Path.GetFileName(t)).ToArray());
-                this.cbx_template.SelectedIndex = 0;             
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-
-
-
-        }
-
         private void cbx_template_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
@@ -510,6 +316,40 @@ namespace CodeGeneratorForm
             this.cbx_template.Items.Add("");
             this.cbx_template.Items.AddRange(Directory.GetFiles(TemplateDirPath, "*.tcode", SearchOption.TopDirectoryOnly).Select(t => Path.GetFileName(t)).ToArray());
             this.cbx_template.SelectedIndex = 0;
+        }
+
+        private void dgv_solution_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
+        {
+            DbContext.Instance.Deleteable<FieldType>()
+                                     .Where(t => t.Id == Convert.ToInt64(e.Row.Cells[0].Value))
+                                     .ExecuteCommand();
+        }
+
+        private void dgv_solution_UserAddedRow(object sender, DataGridViewRowEventArgs e)
+        {
+
+            long id = DbContext.Instance.Insertable(new FieldType
+            {
+                ColumnType = e.Row.Cells[1].Value.ObjToString(),
+                AttrType = e.Row.Cells[2].Value.ObjToString(),
+                PackageName = e.Row.Cells[3].Value.ObjToString(),
+            }).ExecuteReturnSnowflakeId();
+            e.Row.Cells[0].Value = id;
+        }
+
+        private void dgv_solution_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            if (!(dgv_solution.Rows[e.RowIndex].Cells[0].Value == null || string.IsNullOrEmpty(dgv_solution.Rows[e.RowIndex].Cells[0].Value.ToString())))
+            {
+                DbContext.Instance.Updateable(new FieldType
+                {
+                    Id = Convert.ToInt64(dgv_solution.Rows[e.RowIndex].Cells[0].Value),
+                    ColumnType = dgv_solution.Rows[e.RowIndex].Cells[1].Value.ObjToString(),
+                    AttrType = dgv_solution.Rows[e.RowIndex].Cells[2].Value.ObjToString(),
+                    PackageName = dgv_solution.Rows[e.RowIndex].Cells[3].Value.ObjToString(),
+                }).ExecuteCommand();
+            }
+           
         }
     }
 }

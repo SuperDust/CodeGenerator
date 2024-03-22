@@ -126,34 +126,45 @@
   <metadata name="tableDesc.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
-  <metadata name="dataGridViewCheckBoxColumn1.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+  <metadata name="Id.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
-  <metadata name="dataGridViewTextBoxColumn1.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+  <metadata name="ColumnType.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
-  <metadata name="dataGridViewTextBoxColumn2.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+  <metadata name="AttrType.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="PackageName.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
   <data name="textBox1.Text" xml:space="preserve">
-    <value>命名空间 ${namespace}
-表名 ${tableName}
-大写类名 ${ClassName}
-小写类名 ${className}
-备注 ${tableComment}
-列名 ${columnName}
-列备注 ${columnComment}
-默认值 ${columnDefault}
-数据类型 ${dataType}
-是否自增 ${isIdentity}
-是否为null ${isNullable}
-是否主键 ${isPrimaryKey}
-大写属性名 ${PropertyName}
-小写属性名 ${propertyName}
-属性类型 ${propertyType}
-循环列 ${BEGIN}
-循环列 ${END}
-执行函数返回字符串$FUNC{}$</value>
+    <value>模型对象：@Model.DbTable
+{
+    "TableName": "SYS_USER",
+    "ClassName": "SysUser",
+    "ClassName2": "sysUser",
+    "TableComment": "用户",
+    "PackageNames": [
+        "import java.time.LocalDateTime",
+        "import java.time.LocalDateTime"
+    ],
+    "ColumnInfos": [
+        {
+            "TableName": "SYS_USER",
+            "ColumnName": "USER_ID",
+            "ColumnComment": "ID",
+            "ColumnDefault": "默认值",
+            "DataType": "Decimal",
+            "PropertyName": "UserId",
+            "PropertyName2": "userId",
+            "PropertyType": "Long",
+            "IsPrimaryKey": true,
+            "IsNullable": false,
+            "IsIdentity": false
+        }
+    ]
+}</value>
   </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
