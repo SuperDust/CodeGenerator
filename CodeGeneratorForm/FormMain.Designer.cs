@@ -49,13 +49,6 @@
             txt_dir_path = new TextBox();
             btn_open_browse_dir = new Button();
             btn_open_dir = new Button();
-            txt_namespace = new TextBox();
-            label5 = new Label();
-            dgv_solution = new DataGridView();
-            Id = new DataGridViewTextBoxColumn();
-            ColumnType = new DataGridViewTextBoxColumn();
-            AttrType = new DataGridViewTextBoxColumn();
-            PackageName = new DataGridViewTextBoxColumn();
             button1 = new Button();
             button2 = new Button();
             splitContainer1 = new SplitContainer();
@@ -65,13 +58,13 @@
             splitContainer2 = new SplitContainer();
             tableLayoutPanel2 = new TableLayoutPanel();
             panel3 = new Panel();
+            btn_set_field = new Button();
             label6 = new Label();
             checkBox2 = new CheckBox();
             checkBox1 = new CheckBox();
             txt_extend_name = new TextBox();
             textBox1 = new TextBox();
             ((System.ComponentModel.ISupportInitialize)dgv_tables).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)dgv_solution).BeginInit();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
@@ -132,7 +125,7 @@
             dgv_tables.Name = "dgv_tables";
             dgv_tables.ReadOnly = true;
             dgv_tables.RowTemplate.Height = 25;
-            dgv_tables.Size = new Size(302, 574);
+            dgv_tables.Size = new Size(302, 466);
             dgv_tables.TabIndex = 4;
             dgv_tables.CellClick += dgv_tables_CellClick;
             // 
@@ -176,7 +169,7 @@
             // 
             // btn_generator
             // 
-            btn_generator.Location = new Point(181, 163);
+            btn_generator.Location = new Point(181, 131);
             btn_generator.Name = "btn_generator";
             btn_generator.Size = new Size(89, 25);
             btn_generator.TabIndex = 7;
@@ -205,7 +198,7 @@
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(8, 103);
+            label3.Location = new Point(8, 71);
             label3.Name = "label3";
             label3.Size = new Size(56, 17);
             label3.TabIndex = 13;
@@ -213,14 +206,14 @@
             // 
             // txt_filefirst
             // 
-            txt_filefirst.Location = new Point(70, 100);
+            txt_filefirst.Location = new Point(70, 68);
             txt_filefirst.Name = "txt_filefirst";
             txt_filefirst.Size = new Size(47, 23);
             txt_filefirst.TabIndex = 14;
             // 
             // txt_filelast
             // 
-            txt_filelast.Location = new Point(181, 100);
+            txt_filelast.Location = new Point(181, 68);
             txt_filelast.Name = "txt_filelast";
             txt_filelast.Size = new Size(47, 23);
             txt_filelast.TabIndex = 16;
@@ -228,7 +221,7 @@
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new Point(120, 103);
+            label4.Location = new Point(120, 71);
             label4.Name = "label4";
             label4.Size = new Size(56, 17);
             label4.TabIndex = 15;
@@ -236,14 +229,14 @@
             // 
             // txt_dir_path
             // 
-            txt_dir_path.Location = new Point(70, 134);
+            txt_dir_path.Location = new Point(70, 102);
             txt_dir_path.Name = "txt_dir_path";
             txt_dir_path.Size = new Size(233, 23);
             txt_dir_path.TabIndex = 17;
             // 
             // btn_open_browse_dir
             // 
-            btn_open_browse_dir.Location = new Point(5, 133);
+            btn_open_browse_dir.Location = new Point(5, 101);
             btn_open_browse_dir.Name = "btn_open_browse_dir";
             btn_open_browse_dir.Size = new Size(59, 25);
             btn_open_browse_dir.TabIndex = 18;
@@ -253,74 +246,13 @@
             // 
             // btn_open_dir
             // 
-            btn_open_dir.Location = new Point(72, 163);
+            btn_open_dir.Location = new Point(72, 131);
             btn_open_dir.Name = "btn_open_dir";
             btn_open_dir.Size = new Size(88, 25);
             btn_open_dir.TabIndex = 19;
             btn_open_dir.Text = "打开目录";
             btn_open_dir.UseVisualStyleBackColor = true;
             btn_open_dir.Click += btn_open_dir_Click;
-            // 
-            // txt_namespace
-            // 
-            txt_namespace.Location = new Point(70, 38);
-            txt_namespace.Name = "txt_namespace";
-            txt_namespace.Size = new Size(233, 23);
-            txt_namespace.TabIndex = 21;
-            // 
-            // label5
-            // 
-            label5.AutoSize = true;
-            label5.Location = new Point(8, 41);
-            label5.Name = "label5";
-            label5.Size = new Size(56, 17);
-            label5.TabIndex = 20;
-            label5.Text = "命名空间";
-            // 
-            // dgv_solution
-            // 
-            dgv_solution.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgv_solution.Columns.AddRange(new DataGridViewColumn[] { Id, ColumnType, AttrType, PackageName });
-            dgv_solution.Dock = DockStyle.Fill;
-            dgv_solution.Location = new Point(3, 211);
-            dgv_solution.Name = "dgv_solution";
-            dgv_solution.RowTemplate.Height = 25;
-            dgv_solution.Size = new Size(312, 370);
-            dgv_solution.TabIndex = 23;
-            dgv_solution.CellEndEdit += dgv_solution_CellEndEdit;
-            dgv_solution.UserAddedRow += dgv_solution_UserAddedRow;
-            dgv_solution.UserDeletingRow += dgv_solution_UserDeletingRow;
-            // 
-            // Id
-            // 
-            Id.DataPropertyName = "Id";
-            Id.HeaderText = "";
-            Id.Name = "Id";
-            Id.Resizable = DataGridViewTriState.True;
-            Id.SortMode = DataGridViewColumnSortMode.NotSortable;
-            Id.Visible = false;
-            Id.Width = 20;
-            // 
-            // ColumnType
-            // 
-            ColumnType.DataPropertyName = "ColumnType";
-            ColumnType.HeaderText = "字段类型";
-            ColumnType.Name = "ColumnType";
-            ColumnType.Width = 81;
-            // 
-            // AttrType
-            // 
-            AttrType.DataPropertyName = "AttrType";
-            AttrType.HeaderText = "对应属性";
-            AttrType.Name = "AttrType";
-            AttrType.Width = 81;
-            // 
-            // PackageName
-            // 
-            PackageName.DataPropertyName = "PackageName";
-            PackageName.HeaderText = "命名空间";
-            PackageName.Name = "PackageName";
-            PackageName.Width = 81;
             // 
             // button1
             // 
@@ -356,7 +288,7 @@
             // splitContainer1.Panel2
             // 
             splitContainer1.Panel2.Controls.Add(splitContainer2);
-            splitContainer1.Size = new Size(630, 680);
+            splitContainer1.Size = new Size(630, 572);
             splitContainer1.SplitterDistance = 308;
             splitContainer1.TabIndex = 29;
             // 
@@ -372,7 +304,7 @@
             tableLayoutPanel1.RowCount = 2;
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 100F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel1.Size = new Size(308, 680);
+            tableLayoutPanel1.Size = new Size(308, 572);
             tableLayoutPanel1.TabIndex = 0;
             // 
             // panel1
@@ -397,7 +329,7 @@
             panel2.Dock = DockStyle.Fill;
             panel2.Location = new Point(3, 103);
             panel2.Name = "panel2";
-            panel2.Size = new Size(302, 574);
+            panel2.Size = new Size(302, 466);
             panel2.TabIndex = 1;
             // 
             // splitContainer2
@@ -411,7 +343,7 @@
             // 
             splitContainer2.Panel1.Controls.Add(tableLayoutPanel2);
             splitContainer2.Panel2Collapsed = true;
-            splitContainer2.Size = new Size(318, 680);
+            splitContainer2.Size = new Size(318, 572);
             splitContainer2.SplitterDistance = 293;
             splitContainer2.TabIndex = 27;
             // 
@@ -420,35 +352,30 @@
             tableLayoutPanel2.ColumnCount = 1;
             tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             tableLayoutPanel2.Controls.Add(panel3, 0, 0);
-            tableLayoutPanel2.Controls.Add(dgv_solution, 0, 1);
-            tableLayoutPanel2.Controls.Add(textBox1, 0, 2);
+            tableLayoutPanel2.Controls.Add(textBox1, 0, 1);
             tableLayoutPanel2.Dock = DockStyle.Fill;
             tableLayoutPanel2.Location = new Point(0, 0);
             tableLayoutPanel2.Name = "tableLayoutPanel2";
-            tableLayoutPanel2.RowCount = 3;
-            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 208F));
-            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 96F));
+            tableLayoutPanel2.RowCount = 2;
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 164F));
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 400F));
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel2.Size = new Size(318, 680);
+            tableLayoutPanel2.Size = new Size(318, 572);
             tableLayoutPanel2.TabIndex = 0;
             // 
             // panel3
             // 
+            panel3.Controls.Add(btn_set_field);
             panel3.Controls.Add(label6);
             panel3.Controls.Add(checkBox2);
             panel3.Controls.Add(checkBox1);
             panel3.Controls.Add(txt_extend_name);
-            panel3.Controls.Add(txt_namespace);
             panel3.Controls.Add(label2);
             panel3.Controls.Add(btn_open_browse_dir);
             panel3.Controls.Add(txt_dir_path);
             panel3.Controls.Add(btn_open_dir);
             panel3.Controls.Add(txt_filelast);
             panel3.Controls.Add(btn_generator);
-            panel3.Controls.Add(label5);
             panel3.Controls.Add(label4);
             panel3.Controls.Add(cbx_template);
             panel3.Controls.Add(txt_filefirst);
@@ -456,13 +383,23 @@
             panel3.Dock = DockStyle.Fill;
             panel3.Location = new Point(3, 3);
             panel3.Name = "panel3";
-            panel3.Size = new Size(312, 202);
+            panel3.Size = new Size(312, 158);
             panel3.TabIndex = 0;
+            // 
+            // btn_set_field
+            // 
+            btn_set_field.Location = new Point(234, 68);
+            btn_set_field.Name = "btn_set_field";
+            btn_set_field.Size = new Size(69, 23);
+            btn_set_field.TabIndex = 33;
+            btn_set_field.Text = "字段设置";
+            btn_set_field.UseVisualStyleBackColor = true;
+            btn_set_field.Click += btn_set_field_Click;
             // 
             // label6
             // 
             label6.AutoSize = true;
-            label6.Location = new Point(207, 69);
+            label6.Location = new Point(207, 37);
             label6.Name = "label6";
             label6.Size = new Size(44, 17);
             label6.TabIndex = 32;
@@ -471,7 +408,7 @@
             // checkBox2
             // 
             checkBox2.AutoSize = true;
-            checkBox2.Location = new Point(114, 68);
+            checkBox2.Location = new Point(114, 36);
             checkBox2.Name = "checkBox2";
             checkBox2.Size = new Size(87, 21);
             checkBox2.TabIndex = 31;
@@ -481,7 +418,7 @@
             // checkBox1
             // 
             checkBox1.AutoSize = true;
-            checkBox1.Location = new Point(9, 68);
+            checkBox1.Location = new Point(9, 36);
             checkBox1.Name = "checkBox1";
             checkBox1.Size = new Size(99, 21);
             checkBox1.TabIndex = 30;
@@ -490,7 +427,7 @@
             // 
             // txt_extend_name
             // 
-            txt_extend_name.Location = new Point(257, 65);
+            txt_extend_name.Location = new Point(257, 33);
             txt_extend_name.Name = "txt_extend_name";
             txt_extend_name.Size = new Size(46, 23);
             txt_extend_name.TabIndex = 28;
@@ -499,12 +436,12 @@
             // textBox1
             // 
             textBox1.Dock = DockStyle.Fill;
-            textBox1.Location = new Point(3, 587);
+            textBox1.Location = new Point(3, 167);
             textBox1.Multiline = true;
             textBox1.Name = "textBox1";
             textBox1.ReadOnly = true;
             textBox1.ScrollBars = ScrollBars.Both;
-            textBox1.Size = new Size(312, 90);
+            textBox1.Size = new Size(312, 402);
             textBox1.TabIndex = 24;
             textBox1.Text = resources.GetString("textBox1.Text");
             // 
@@ -512,7 +449,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(630, 680);
+            ClientSize = new Size(630, 572);
             Controls.Add(splitContainer1);
             Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
@@ -520,7 +457,6 @@
             Text = "代码生成器";
             Load += FormMain_Load;
             ((System.ComponentModel.ISupportInitialize)dgv_tables).EndInit();
-            ((System.ComponentModel.ISupportInitialize)dgv_solution).EndInit();
             splitContainer1.Panel1.ResumeLayout(false);
             splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
@@ -561,9 +497,6 @@
         private TextBox txt_dir_path;
         private Button btn_open_browse_dir;
         private Button btn_open_dir;
-        private TextBox txt_namespace;
-        private Label label5;
-        private DataGridView dgv_solution;
         private Button button1;
         private Button button2;
         private SplitContainer splitContainer1;
@@ -575,12 +508,9 @@
         private Panel panel3;
         private TextBox txt_extend_name;
         private TextBox textBox1;
-        private DataGridViewTextBoxColumn Id;
-        private DataGridViewTextBoxColumn ColumnType;
-        private DataGridViewTextBoxColumn AttrType;
-        private DataGridViewTextBoxColumn PackageName;
         private CheckBox checkBox1;
         private CheckBox checkBox2;
         private Label label6;
+        private Button btn_set_field;
     }
 }

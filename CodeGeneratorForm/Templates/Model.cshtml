@@ -1,0 +1,17 @@
+﻿@foreach (var item in Model.ReferenceList)
+{
+	@:@item
+}
+
+namespace Model
+{
+
+	public class @Model.TableName
+	{
+@foreach (var item in Model.ColumnInfos)
+{
+	@:
+	@:public @item.PropertyType @item.ColumnName { get; set; }
+}
+	}
+}

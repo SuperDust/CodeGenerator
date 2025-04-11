@@ -11,11 +11,10 @@ namespace CodeGeneratorForm
 {
     public partial class FormMain : Form
     {
-
-
         private List<DbTableInfo>? dbTableInfos = null;
 
         private string readFilePath = null;
+
         public FormMain()
         {
             InitializeComponent();
@@ -24,7 +23,7 @@ namespace CodeGeneratorForm
         private void FormMain_Load(object sender, EventArgs e)
         {
             dgv_tables.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            DbContext.Instance.CodeFirst.InitTables(typeof(FieldType), typeof(DbConfig));
+            DbContext.Instance.CodeFirst.InitTables(typeof(DbConfig));
             DbConfig dbConfig = DbContext.Instance.Queryable<DbConfig>().First();
             if (dbConfig == null)
             {
@@ -38,17 +37,13 @@ namespace CodeGeneratorForm
             string TemplateDirPath = Path.Combine(Environment.CurrentDirectory, "Templates");
             this.cbx_template.Items.Clear();
             this.cbx_template.Items.Add("");
-            this.cbx_template.Items.AddRange(Directory.GetFiles(TemplateDirPath, "*.cshtml", SearchOption.TopDirectoryOnly).Select(t => Path.GetFileName(t)).ToArray());
+            this.cbx_template.Items.AddRange(
+                Directory
+                    .GetFiles(TemplateDirPath, "*.cshtml", SearchOption.TopDirectoryOnly)
+                    .Select(t => Path.GetFileName(t))
+                    .ToArray()
+            );
             this.cbx_template.SelectedIndex = 0;
-            InitSolution();
-        }
-
-
-
-        private void InitSolution()
-        {
-            DataTable dt = DbContext.Instance.Queryable<FieldType>().ToDataTable();
-            dgv_solution.DataSource = dt;
         }
 
         /// <summary>
@@ -68,15 +63,22 @@ namespace CodeGeneratorForm
                         list.Add(row.Tag as DbTableInfo);
                     }
                 }
-                if (list is { Count: > 0 }
+                if (
+                    list is { Count: > 0 }
                     && !string.IsNullOrEmpty(this.cbx_template.Text)
-                    && !string.IsNullOrEmpty(this.txt_dir_path.Text))
+                    && !string.IsNullOrEmpty(this.txt_dir_path.Text)
+                )
                 {
-                    Generator.Init(list, this.cbx_template.Text, this.txt_filefirst.Text, this.txt_filelast.Text, this.txt_dir_path.Text, this.txt_namespace.Text, this.txt_extend_name.Text,
+                    Generator.Init(
+                        list,
+                        this.cbx_template.Text,
+                        this.txt_filefirst.Text,
+                        this.txt_filelast.Text,
+                        this.txt_dir_path.Text,
+                        this.txt_extend_name.Text,
                         this.checkBox2.Checked,
                         this.checkBox1.Checked
-                        );
-                    
+                    );
                 }
                 else
                 {
@@ -89,7 +91,6 @@ namespace CodeGeneratorForm
                         MessageBox.Show("请选择你要生成的数据！");
                     }
                     return;
-
                 }
             }
             else
@@ -98,8 +99,6 @@ namespace CodeGeneratorForm
                 return;
             }
         }
-
-      
 
         /// <summary>
         /// 连接数据库
@@ -111,7 +110,8 @@ namespace CodeGeneratorForm
             try
             {
                 DbContext.db = DbContext.Connection(this.txt_connstr.Text, this.cbx_dbtype.Text);
-                DbContext.DbType = (SqlSugar.DbType)Enum.Parse(typeof(SqlSugar.DbType), this.cbx_dbtype.Text);
+                DbContext.DbType = (SqlSugar.DbType)
+                    Enum.Parse(typeof(SqlSugar.DbType), this.cbx_dbtype.Text);
                 dbTableInfos = DbContext.db.DbMaintenance.GetTableInfoList();
                 dgv_tables.Rows.Clear();
                 dbTableInfos.ForEach(info =>
@@ -123,11 +123,15 @@ namespace CodeGeneratorForm
                     dgv_tables.Rows[rowIndex].Tag = info;
                 });
                 DbContext.Instance.Deleteable<DbConfig>().ExecuteCommand();
-                DbContext.Instance.Insertable(new DbConfig
-                {
-                    ConnectionConfig = this.txt_connstr.Text,
-                    ConnectionType = this.cbx_dbtype.Text
-                }).ExecuteCommand();
+                DbContext
+                    .Instance.Insertable(
+                        new DbConfig
+                        {
+                            ConnectionConfig = this.txt_connstr.Text,
+                            ConnectionType = this.cbx_dbtype.Text,
+                        }
+                    )
+                    .ExecuteCommand();
             }
             catch (Exception ex)
             {
@@ -170,7 +174,8 @@ namespace CodeGeneratorForm
         {
             if (e.RowIndex != -1 && e.ColumnIndex != -1)
             {
-                dgv_tables.Rows[e.RowIndex].Cells[0].Value = dgv_tables.Rows[e.RowIndex].Cells[0].Value.ToString() == "0" ? 1 : 0;
+                dgv_tables.Rows[e.RowIndex].Cells[0].Value =
+                    dgv_tables.Rows[e.RowIndex].Cells[0].Value.ToString() == "0" ? 1 : 0;
             }
         }
 
@@ -186,7 +191,9 @@ namespace CodeGeneratorForm
                 return;
             }
             dgv_tables.Rows.Clear();
-            var rows = dbTableInfos.Where(t => t.Name.ToLower().Contains(txt_search.Text.ToLower())).ToList();
+            var rows = dbTableInfos
+                .Where(t => t.Name.ToLower().Contains(txt_search.Text.ToLower()))
+                .ToList();
             if (rows is { Count: > 0 })
             {
                 rows.ForEach(info =>
@@ -246,25 +253,36 @@ namespace CodeGeneratorForm
                         list.Add(row.Tag as DbTableInfo);
                     }
                 }
-                string TemplateDirPath = Path.Combine(Environment.CurrentDirectory, "Excel", "Excel.xlsx");
+                string TemplateDirPath = Path.Combine(
+                    Environment.CurrentDirectory,
+                    "Excel",
+                    "Excel.xlsx"
+                );
                 using (ExcelPackage package = new ExcelPackage(new FileInfo(TemplateDirPath)))
                 {
                     var sheet = package.Workbook.Worksheets[0];
                     var sheetStyle = package.Workbook.Worksheets[1];
                     int rowIndex = 1;
-                    INIFile ini = new INIFile(Path.Combine(Environment.CurrentDirectory, "config.ini"));
+                    INIFile ini = new INIFile(
+                        Path.Combine(Environment.CurrentDirectory, "config.ini")
+                    );
 
                     for (int i = 0; i < list.Count; i++)
                     {
-
                         sheetStyle.Cells[1, 1, 2, 8].Copy(sheet.Cells[rowIndex, 1]);
                         sheet.Cells[rowIndex, 1].Value = list[i].Name + " " + list[i].Description;
                         rowIndex++;
                         List<DbColumnInfo> columnInfos =
-                               DbContext.db!.DbMaintenance.GetColumnInfosByTableName(list[i].Name, false);
+                            DbContext.db!.DbMaintenance.GetColumnInfosByTableName(
+                                list[i].Name,
+                                false
+                            );
                         for (int j = 0; j < columnInfos.Count; j++)
                         {
-                            string type = ini.IniReadValue("ExcelTypeConvort", columnInfos[j].DataType);
+                            string type = ini.IniReadValue(
+                                "ExcelTypeConvort",
+                                columnInfos[j].DataType
+                            );
                             if (string.IsNullOrWhiteSpace(type))
                             {
                                 type = columnInfos[j].DataType;
@@ -275,7 +293,14 @@ namespace CodeGeneratorForm
                             sheet.Cells[rowIndex, 1].Value = j + 1;
                             sheet.Cells[rowIndex, 2].Value = columnInfos[j].DbColumnName;
                             sheet.Cells[rowIndex, 3].Value = type;
-                            sheet.Cells[rowIndex, 4].Value = "(" + (columnInfos[j].DecimalDigits > 0 ? columnInfos[j].Length + "," + columnInfos[j].DecimalDigits : columnInfos[j].Length) + ")";
+                            sheet.Cells[rowIndex, 4].Value =
+                                "("
+                                + (
+                                    columnInfos[j].DecimalDigits > 0
+                                        ? columnInfos[j].Length + "," + columnInfos[j].DecimalDigits
+                                        : columnInfos[j].Length
+                                )
+                                + ")";
                             sheet.Cells[rowIndex, 5].Value = columnInfos[j].IsPrimarykey ? "√" : "";
                             sheet.Cells[rowIndex, 6].Value = columnInfos[j].IsNullable ? "√" : "";
                             sheet.Cells[rowIndex, 7].Value = columnInfos[j].DefaultValue;
@@ -286,7 +311,14 @@ namespace CodeGeneratorForm
                         rowIndex++;
                     }
 
-                    package.SaveAs(new FileInfo(Path.Combine(dirPath, "DataDoc" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".xlsx")));
+                    package.SaveAs(
+                        new FileInfo(
+                            Path.Combine(
+                                dirPath,
+                                "DataDoc" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".xlsx"
+                            )
+                        )
+                    );
                 }
             }
         }
@@ -301,7 +333,7 @@ namespace CodeGeneratorForm
             if (e.Button == MouseButtons.Right)
             {
                 ContextMenuStrip contextMenu = new ContextMenuStrip();
-                contextMenu.Items.Add("删除");
+                contextMenu.Items.Add("编辑");
                 contextMenu.Click += ContextMenu_Click;
                 this.cbx_template.ContextMenuStrip = contextMenu;
             }
@@ -309,47 +341,15 @@ namespace CodeGeneratorForm
 
         private void ContextMenu_Click(object? sender, EventArgs e)
         {
-            string TemplateDirPath = Path.Combine(Environment.CurrentDirectory, "Templates");
-            File.Delete(Directory.GetFiles(TemplateDirPath, "*.tcode",
-               SearchOption.TopDirectoryOnly).Where(t => Path.GetFileName(t) == this.cbx_template.Text).First());
-            this.cbx_template.Items.Clear();
-            this.cbx_template.Items.Add("");
-            this.cbx_template.Items.AddRange(Directory.GetFiles(TemplateDirPath, "*.tcode", SearchOption.TopDirectoryOnly).Select(t => Path.GetFileName(t)).ToArray());
-            this.cbx_template.SelectedIndex = 0;
+            Process.Start(
+                "notepad.exe",
+                Path.Combine(Environment.CurrentDirectory, "Templates", this.cbx_template.Text)
+            );
         }
 
-        private void dgv_solution_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
+        private void btn_set_field_Click(object sender, EventArgs e)
         {
-            DbContext.Instance.Deleteable<FieldType>()
-                                     .Where(t => t.Id == Convert.ToInt64(e.Row.Cells[0].Value))
-                                     .ExecuteCommand();
-        }
-
-        private void dgv_solution_UserAddedRow(object sender, DataGridViewRowEventArgs e)
-        {
-
-            long id = DbContext.Instance.Insertable(new FieldType
-            {
-                ColumnType = e.Row.Cells[1].Value.ObjToString(),
-                AttrType = e.Row.Cells[2].Value.ObjToString(),
-                PackageName = e.Row.Cells[3].Value.ObjToString(),
-            }).ExecuteReturnSnowflakeId();
-            e.Row.Cells[0].Value = id;
-        }
-
-        private void dgv_solution_CellEndEdit(object sender, DataGridViewCellEventArgs e)
-        {
-            if (!(dgv_solution.Rows[e.RowIndex].Cells[0].Value == null || string.IsNullOrEmpty(dgv_solution.Rows[e.RowIndex].Cells[0].Value.ToString())))
-            {
-                DbContext.Instance.Updateable(new FieldType
-                {
-                    Id = Convert.ToInt64(dgv_solution.Rows[e.RowIndex].Cells[0].Value),
-                    ColumnType = dgv_solution.Rows[e.RowIndex].Cells[1].Value.ObjToString(),
-                    AttrType = dgv_solution.Rows[e.RowIndex].Cells[2].Value.ObjToString(),
-                    PackageName = dgv_solution.Rows[e.RowIndex].Cells[3].Value.ObjToString(),
-                }).ExecuteCommand();
-            }
-           
+            Process.Start("notepad.exe", Path.Combine(Environment.CurrentDirectory, "field.ini"));
         }
     }
 }

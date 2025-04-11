@@ -10,12 +10,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Templates\SampleTemplate.cshtml" />
+    <None Remove="Templates\Model.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="appicon.ico" />
-    <Content Include="Templates\SampleTemplate.cshtml">
+    <Content Include="Templates\Model.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -27,6 +27,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="field.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="config.ini">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
