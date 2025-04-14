@@ -145,6 +145,11 @@ namespace CodeGeneratorForm
 
         private static string ToPascla(string str, bool isUpper = true)
         {
+            str = System.Text.RegularExpressions.Regex.Replace(
+                str,
+                "[a-z][A-Z]",
+                m => $"{m.Value[0]}_{char.ToLower(m.Value[1])}"
+            );
             string[] split = str.Split(new char[] { '/', ' ', '_', '.' });
             string newStr = "";
             int count = 0;

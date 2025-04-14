@@ -10,8 +10,7 @@ namespace CodeGeneratorForm
         [STAThread]
         static void Main()
         {
-            DbContext.Instance.CodeFirst.InitTables(
-            typeof(DbConfig));
+            DbContext.Instance.CodeFirst.InitTables(typeof(DbConfig));
             ApplicationConfiguration.Initialize();
             Application.Run(new FormMain());
         }

@@ -13,8 +13,6 @@ namespace CodeGeneratorForm
     {
         private List<DbTableInfo>? dbTableInfos = null;
 
-        private string readFilePath = null;
-
         public FormMain()
         {
             InitializeComponent();
